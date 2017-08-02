@@ -1,4 +1,5 @@
-RGAPI-6A0E7F92-ECF7-418F-81BC-C19B088F4451
+curl --request GET 'https://jp1.api.riotgames.com/lol/summoner/v3/summoners/by-name/あんで ぃー?api_key=RGAPI-ba4d7259-f0ca-4d35-85ad-64f70f1739a0'
+
 
 ・「api.riotgames.com」と「api.pvp.net」は等価
 
