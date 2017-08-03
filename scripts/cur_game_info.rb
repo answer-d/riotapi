@@ -20,7 +20,7 @@ if res.code != '200'
   puts <<EOS
 <html>
 <head>
-<title>マスタリー</title>
+<title>200以外だぁ</title>
 </head>
 <body>
 </body>
