@@ -7,7 +7,7 @@ require 'json'
 
 SUMMONER_ID = '6304677'
 
-APIKEY = 'RGAPI-ba4d7259-f0ca-4d35-85ad-64f70f1739a0'
+APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
 URI_API = '/lol/league/v3/positions/by-summoner/' + SUMMONER_ID
 URI_FOOT = "?api_key=#{APIKEY}"

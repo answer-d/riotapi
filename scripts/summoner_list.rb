@@ -4,7 +4,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-APIKEY = 'RGAPI-ba4d7259-f0ca-4d35-85ad-64f70f1739a0'
+APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
 URI_API = '/lol/summoner/v3/summoners/by-name/'
 URI_FOOT = "?api_key=#{APIKEY}"
