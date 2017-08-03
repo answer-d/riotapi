@@ -17,7 +17,7 @@ URI_FOOT = "?api_key=#{APIKEY}"
 WIDTH=1920
 HEIGHT=1080
 
-KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃""渇欲の戦神"]
+KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
 
 mastery_list = CSV.read(File.expand_path(File.dirname($0)) + '/../data/mastery.csv')
 keystone_masteries = {}
