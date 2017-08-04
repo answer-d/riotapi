@@ -7,7 +7,8 @@ require 'json'
 require 'csv'
 
 #SUMMONER_ID = '6304677' #おれ
-SUMMONER_ID = '6160658' #rainさん
+#SUMMONER_ID = '6160658' #rainさん
+#SUMMONER_ID = '' #
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -35,8 +36,8 @@ if res.code != '200'
 <head>
 <title>200以外だぁ</title>
 </head>
-<body>
-<table border=1 width="#{WIDTH}" height="#{HEIGHT}"><tr><td></td></tr></table>
+<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+<table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0"><tr><td></td></tr></table>
 </body>
 </html>
 EOS
@@ -50,13 +51,13 @@ puts <<EOS
 <head>
 <title>マスタリー</title>
 </head>
-<body>
-<table border=1 width="#{WIDTH}" height="#{HEIGHT}">
+<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+<table border=1 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
 <tr height="#{HEIGHT*0.1}"><td width="#{WIDTH*0.1}"></td><td width="#{WIDTH*0.8}"></td><td width="#{WIDTH*0.1}"></td></tr><tr height="#{HEIGHT*0.8}">
 EOS
 
 [100,200].each{|teamId|
-  puts "<td><table width=\"#{WIDTH*0.1}\" height=\"#{HEIGHT*0.8}\">"
+  puts "<td><table width=\"#{WIDTH*0.1}\" height=\"#{HEIGHT*0.8}\" cellspacing=\"0\" cellpadding=\"0\">"
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
     puts "<tr><td>"
     puts "#{elem["summonerName"]}(#{elem["summonerId"]})<br>"

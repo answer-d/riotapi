@@ -1,3 +1,11 @@
+ruby /home/answer_d/git_repos/riotapi/scripts/champion.rb > /home/answer_d/git_repos/riotapi/data/champion.csv
+ruby /home/answer_d/git_repos/riotapi/scripts/mastery.rb > /home/answer_d/git_repos/riotapi/data/mastery.csv
+ruby /home/answer_d/git_repos/riotapi/scripts/summoner_list.rb > /home/answer_d/git_repos/riotapi/data/summoner_list.csv
+
+ruby /home/answer_d/git_repos/riotapi/scripts/cur_rank.rb > /var/www/html/rank.html
+ruby /home/answer_d/git_repos/riotapi/scripts/cur_game_info.rb > /var/www/html/mastery.html
+
+
 作りたいかもしれないものリスト
 
 [大会用]
