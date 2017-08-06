@@ -8,7 +8,7 @@ require 'csv'
 
 #SUMMONER_ID = '6304677' #おれ
 #SUMMONER_ID = '6160658' #rainさん
-#SUMMONER_ID = '' #
+SUMMONER_ID = '6179151' #スタンミさん
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -16,7 +16,7 @@ URI_API = '/lol/spectator/v3/active-games/by-summoner/' + SUMMONER_ID
 URI_FOOT = "?api_key=#{APIKEY}"
 
 WIDTH=1920
-HEIGHT=1080
+HEIGHT=677
 
 KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
 
@@ -34,6 +34,7 @@ if res.code != '200'
   puts <<EOS
 <html>
 <head>
+<meta http-equiv="Refresh" content="5">
 <title>200以外だぁ</title>
 </head>
 <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
@@ -49,20 +50,25 @@ json = JSON.load(res.body)
 puts <<EOS
 <html>
 <head>
+<meta http-equiv="Refresh" content="5">
 <title>マスタリー</title>
 </head>
 <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<table border=1 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
-<tr height="#{HEIGHT*0.1}"><td width="#{WIDTH*0.1}"></td><td width="#{WIDTH*0.8}"></td><td width="#{WIDTH*0.1}"></td></tr><tr height="#{HEIGHT*0.8}">
+<table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
+<tr height="122"><td width="97"></td><td width="1726"></td><td width="97"></td></tr><tr>
 EOS
 
 [100,200].each{|teamId|
-  puts "<td><table width=\"#{WIDTH*0.1}\" height=\"#{HEIGHT*0.8}\" cellspacing=\"0\" cellpadding=\"0\">"
+  puts "<td><table border=0 width=\"97\" height=\"555\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"red\">"
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
-    puts "<tr><td>"
-    puts "#{elem["summonerName"]}(#{elem["summonerId"]})<br>"
+    puts "<tr height=\"111\"><td width=\"97\">"
+    puts "<font size=\"1\" color=\"white\">#{elem["summonerName"]}(#{elem["summonerId"]})</font><br>"
+    
     #ここにマスタリ検索処理
-    p elem["masteries"].map{|hash| hash["masteryId"]}
+    part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
+    part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
+    puts "<font size=\"1\" color=\"white\">#{keystone_masteries[part_keystone]}(#{part_keystone})</font>"
+    
     #puts "#{elem["teamId"]}"
     puts "</td></tr>"
   }
@@ -71,7 +77,7 @@ EOS
 }
 
 puts <<EOS
-</tr><tr height="#{HEIGHT*0.1}"><td></td><td></td><td></td></tr>
+</tr>
 </table>
 </body>
 </html>
