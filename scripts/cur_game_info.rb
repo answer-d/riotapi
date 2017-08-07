@@ -6,11 +6,11 @@ require 'uri'
 require 'json'
 require 'csv'
 
-#SUMMONER_ID = '6304677' #おれ
+SUMMONER_ID = '6304677' #おれ
 #SUMMONER_ID = '6160658' #rainさん
 #SUMMONER_ID = '6179151' #スタンミさん
 #SUMMONER_ID = '6313201' #みらいさん
-SUMMONER_ID = '6172666' #SPYGEA(だれ？)
+#SUMMONER_ID = '6172666' #SPYGEA(だれ？)
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -54,7 +54,7 @@ EOS
 
 [100,200].each{|teamId|
   puts <<-EOS
-    <td bgcolor="blue">
+    <td>
     <table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0">
   EOS
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
@@ -65,20 +65,11 @@ EOS
       <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}"></td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}"></td></tr>
       <tr height="#{INS_ICON_SIDES}">
-      <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}" #{'bgcolor="red"' if teamId == 200}>
+      <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}">
       #{'<img src="./img/' + part_keystone + '.png" width="' + INS_ICON_SIDES.to_s + '" height="' + INS_ICON_SIDES.to_s + '">' if teamId == 200}</td>
-      <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}" #{'bgcolor="red"' if teamId == 100}>
+      <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}">
       #{'<img src="./img/' + part_keystone + '.png" width="' + INS_ICON_SIDES.to_s + '" height="' + INS_ICON_SIDES.to_s + '">' if teamId == 100}</td></tr>
     EOS
-=begin
-    puts <<-EOS
-      <tr height="#{ICON_HEIGHT}"><td width="#{ICON_WIDTH}">
-      <font size="1" color="white">
-      #{elem["summonerName"]}(#{elem["summonerId"]})<br>
-      #{keystone_masteries[part_keystone]}(#{part_keystone})</font>
-      </td></tr>
-    EOS
-=end
   } if !json.nil?
   puts "</table></td>"
   puts "<td></td>" if teamId == 100
