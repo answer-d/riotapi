@@ -7,8 +7,8 @@ require 'json'
 require 'csv'
 
 #SUMMONER_ID = '6304677' #おれ
-#SUMMONER_ID = '6160658' #rainさん
-SUMMONER_ID = '6179151' #スタンミさん
+SUMMONER_ID = '6160658' #rainさん
+#SUMMONER_ID = '6179151' #スタンミさん
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -16,7 +16,10 @@ URI_API = '/lol/spectator/v3/active-games/by-summoner/' + SUMMONER_ID
 URI_FOOT = "?api_key=#{APIKEY}"
 
 WIDTH=1920
-HEIGHT=677
+ICON_WIDTH=(WIDTH*0.05).floor
+ICON_HEIGHT=111
+T_MARGIN=122
+HEIGHT=ICON_HEIGHT*5+T_MARGIN
 
 KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
 
@@ -29,57 +32,47 @@ KEYSTONES.each{|item|
 
 uri = URI.parse URI.encode("#{URI_HEAD}#{URI_API}#{URI_FOOT}")
 res = Net::HTTP.get_response(uri)
+json = JSON.load(res.body) if res.code == '200'
 
-if res.code != '200'
-  puts <<EOS
-<html>
-<head>
-<meta http-equiv="Refresh" content="5">
-<title>200以外だぁ</title>
-</head>
-<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0"><tr><td></td></tr></table>
-</body>
-</html>
-EOS
-  exit
-end
-
-json = JSON.load(res.body)
-
-puts <<EOS
-<html>
-<head>
-<meta http-equiv="Refresh" content="5">
-<title>マスタリー</title>
-</head>
-<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-<table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
-<tr height="122"><td width="97"></td><td width="1726"></td><td width="97"></td></tr><tr>
+puts <<-EOS
+  <html>
+  <head>
+  <meta http-equiv="Refresh" content="30">
+  <title>マスタリー</title>
+  </head>
+  <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+  <table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
+  <tr height="#{T_MARGIN}">
+  <td width="#{ICON_WIDTH}"></td>
+  <td width="#{WIDTH-ICON_WIDTH*2}"></td>
+  <td width="#{ICON_WIDTH}"></td></tr>
+  <tr>
 EOS
 
 [100,200].each{|teamId|
-  puts "<td><table border=0 width=\"97\" height=\"555\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"red\">"
+  puts <<-EOS
+    <td bgcolor="blue">
+    <table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0" bgcolor="red">
+  EOS
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
-    puts "<tr height=\"111\"><td width=\"97\">"
-    puts "<font size=\"1\" color=\"white\">#{elem["summonerName"]}(#{elem["summonerId"]})</font><br>"
-    
-    #ここにマスタリ検索処理
     part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
     part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
-    puts "<font size=\"1\" color=\"white\">#{keystone_masteries[part_keystone]}(#{part_keystone})</font>"
-    
-    #puts "#{elem["teamId"]}"
-    puts "</td></tr>"
-  }
+    puts <<-EOS
+      <tr height="#{ICON_HEIGHT}"><td width="#{ICON_WIDTH}">
+      <font size="1" color="white">
+      #{elem["summonerName"]}(#{elem["summonerId"]})<br>
+      #{keystone_masteries[part_keystone]}(#{part_keystone})</font>
+      </td></tr>
+    EOS
+  } if !json.nil?
   puts "</table></td>"
   puts "<td></td>" if teamId == 100
 }
 
-puts <<EOS
-</tr>
-</table>
-</body>
-</html>
+puts <<-EOS
+  </tr>
+  </table>
+  </body>
+  </html>
 EOS
 
