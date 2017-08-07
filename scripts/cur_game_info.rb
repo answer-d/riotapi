@@ -7,8 +7,10 @@ require 'json'
 require 'csv'
 
 #SUMMONER_ID = '6304677' #おれ
-SUMMONER_ID = '6160658' #rainさん
+#SUMMONER_ID = '6160658' #rainさん
 #SUMMONER_ID = '6179151' #スタンミさん
+#SUMMONER_ID = '6313201' #みらいさん
+SUMMONER_ID = '6172666' #SPYGEA(だれ？)
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -20,6 +22,7 @@ ICON_WIDTH=(WIDTH*0.05).floor
 ICON_HEIGHT=111
 T_MARGIN=122
 HEIGHT=ICON_HEIGHT*5+T_MARGIN
+INS_ICON_SIDES=32
 
 KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
 
@@ -52,11 +55,22 @@ EOS
 [100,200].each{|teamId|
   puts <<-EOS
     <td bgcolor="blue">
-    <table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0" bgcolor="red">
+    <table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0">
   EOS
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
     part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
     part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
+    puts <<-EOS
+      <tr height="#{ICON_HEIGHT - INS_ICON_SIDES}">
+      <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}"></td>
+      <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}"></td></tr>
+      <tr height="#{INS_ICON_SIDES}">
+      <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}" #{'bgcolor="red"' if teamId == 200}>
+      #{'<img src="./img/' + part_keystone + '.png" width="' + INS_ICON_SIDES.to_s + '" height="' + INS_ICON_SIDES.to_s + '">' if teamId == 200}</td>
+      <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}" #{'bgcolor="red"' if teamId == 100}>
+      #{'<img src="./img/' + part_keystone + '.png" width="' + INS_ICON_SIDES.to_s + '" height="' + INS_ICON_SIDES.to_s + '">' if teamId == 100}</td></tr>
+    EOS
+=begin
     puts <<-EOS
       <tr height="#{ICON_HEIGHT}"><td width="#{ICON_WIDTH}">
       <font size="1" color="white">
@@ -64,6 +78,7 @@ EOS
       #{keystone_masteries[part_keystone]}(#{part_keystone})</font>
       </td></tr>
     EOS
+=end
   } if !json.nil?
   puts "</table></td>"
   puts "<td></td>" if teamId == 100
