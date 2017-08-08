@@ -4,6 +4,7 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'date'
 
 SUMMONER_ID = '6304677'
 
@@ -24,6 +25,9 @@ puts <<-EOS
   <title>レート</title>
   </head>
   <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+  <!--
+  last update : #{DateTime.now}
+  -->
   <table border=0 width="256" height="64" cellspacing="0" cellpadding="0">
   <tr><td width="64">
   <img src=./img/#{hash["tier"]}.png width="64" height="64">

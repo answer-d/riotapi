@@ -46,6 +46,9 @@ puts <<-EOS
   </head>
   <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
   <!--
+  last update : #{DateTime.now}
+  -->
+  <!--
   #{json}
   -->
   <table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
