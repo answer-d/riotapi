@@ -51,7 +51,7 @@ puts <<-EOS
   <!--
   #{json}
   -->
-  <table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0" background="./img/spectator.jpg">
+  <table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
   <tr height="#{T_MARGIN}">
   <td width="#{ICON_WIDTH}"></td>
   <td width="#{WIDTH-ICON_WIDTH*2}"></td>
