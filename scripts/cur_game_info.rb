@@ -9,9 +9,9 @@ require 'csv'
 #SUMMONER_ID = '6304677' #おれ
 #SUMMONER_ID = '6160658' #rainさん
 #SUMMONER_ID = '6179151' #スタンミさん
-#SUMMONER_ID = '6313201' #みらいさん
+SUMMONER_ID = '6313201' #みらいさん
 #SUMMONER_ID = '6172666' #SPYGEA(だれ？)
-SUMMONER_ID = '6695493' #そにろじさん
+#SUMMONER_ID = '6695493' #そにろじさん
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -45,6 +45,9 @@ puts <<-EOS
   <title>マスタリー</title>
   </head>
   <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+  <!--
+  #{json}
+  -->
   <table border=0 width="#{WIDTH}" height="#{HEIGHT}" cellspacing="0" cellpadding="0">
   <tr height="#{T_MARGIN}">
   <td width="#{ICON_WIDTH}"></td>
@@ -54,33 +57,26 @@ puts <<-EOS
 EOS
 
 [100,200].each{|teamId|
-  puts <<-EOS
-    <td>
-    <table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0">
-  EOS
+  puts %!<td><table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0">!
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
     part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
     part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
     puts <<-EOS
       <tr height="#{40}">
-      <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}">#{elem["summonerName"]}</td>
+      <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}">
+      <font color="red">#{elem["summonerName"]}</font>
+      </td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}"></td></tr>
       <tr height="#{INS_ICON_SIDES}">
       <td width="#{teamId == 100 ? ICON_WIDTH - INS_ICON_SIDES : INS_ICON_SIDES}">
-      #{'<img src="./img/' + part_keystone + '.png" width="' + INS_ICON_SIDES.to_s + '" height="' + INS_ICON_SIDES.to_s + '">' if teamId == 200}</td>
-      <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}">
-      #{'<img src="./img/' + part_keystone + '.png" width="' + INS_ICON_SIDES.to_s + '" height="' + INS_ICON_SIDES.to_s + '">' if teamId == 100}</td></tr>
-      <tr height="#{ICON_WIDTH - INS_ICON_SIDES - 40}"></tr>
     EOS
+    puts %!<img src="./img/#{part_keystone}.png" width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 200
+    puts %!</td><td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_ICON_SIDES}">!
+    puts %!<img src="./img/#{part_keystone}.png" width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 100
+    puts %!</td></tr><tr height="#{ICON_WIDTH - INS_ICON_SIDES - 40}"></tr>!
   } if !json.nil?
-  puts "</table></td>"
-  puts "<td></td>" if teamId == 100
+  puts %!</table></td>!
+  puts %!<td></td>! if teamId == 100
 }
-
-puts <<-EOS
-  </tr>
-  </table>
-  </body>
-  </html>
-EOS
+puts %!</tr></table></body></html>!
 
