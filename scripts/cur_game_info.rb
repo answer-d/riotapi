@@ -12,7 +12,11 @@ require 'csv'
 #SUMMONER_ID = '6313201' #みらいさん
 #SUMMONER_ID = '6172666' #SPYGEAさん(だれ？)
 #SUMMONER_ID = '6695493' #そにろじさん
-SUMMONER_ID = '8760255' #UGさん
+#SUMMONER_ID = '8760255' #UGさん
+#SUMMONER_ID = '7051645' #まゆりさん
+#SUMMONER_ID = '6188121' #なぎさっちさん
+#SUMMONER_ID = '6416807' #damさん
+SUMMONER_ID = '6470919' #yanyantkbさん
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
@@ -36,7 +40,10 @@ KEYSTONES.each{|item|
 
 uri = URI.parse URI.encode("#{URI_HEAD}#{URI_API}#{URI_FOOT}")
 res = Net::HTTP.get_response(uri)
-json = JSON.load(res.body) if res.code == '200'
+
+exit if res.code != '200'
+
+json = JSON.load(res.body)
 
 puts <<-EOS
   <html>
@@ -72,7 +79,13 @@ INS_V_MARGIN=7
     
     l_api = '/lol/league/v3/positions/by-summoner/' + elem["summonerId"].to_s
     l_uri = URI.parse URI.encode("#{URI_HEAD}#{l_api}#{URI_FOOT}")
+
+    puts "<!--#{l_uri}-->"
+
     l_res = Net::HTTP.get_response(l_uri)
+
+    puts "<!--#{l_res.body}-->"
+
     l_json = JSON.load(l_res.body).at(0)
     
     puts <<-EOS
@@ -87,12 +100,16 @@ INS_V_MARGIN=7
       <td width="#{teamId == 100 ? INS_L_MARGIN : INS_ICON_SIDES}"></td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2}">
     EOS
+    #puts %!<div style="background-color : red"><img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}"></div>! if teamId == 100
     puts %!<img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 100
+
     puts <<-EOS
       </td>
       <td width="#{teamId == 100 ? ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2 : INS_ICON_SIDES}">
     EOS
+    #puts %!<div style="background-color : red"><img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}"></div>! if teamId == 200
     puts %!<img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 200
+
     puts <<-EOS
       </td><td width="#{teamId == 100 ? INS_ICON_SIDES : INS_L_MARGIN}"></td>
       </tr>

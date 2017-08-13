@@ -15,8 +15,6 @@ URI_FOOT = "?api_key=#{APIKEY}"
 
 uri = URI.parse URI.encode("#{URI_HEAD}#{URI_API}#{URI_FOOT}")
 res = Net::HTTP.get_response(uri)
-list = JSON.load(res.body)
-hash = list[0]
 
 puts <<-EOS
   <html>
@@ -28,6 +26,17 @@ puts <<-EOS
   <!--
   last update : #{DateTime.now}
   -->
+EOS
+
+if res.code == '403'
+  puts '<font color="white">APIキー確認</font></body></html>'
+  exit
+end
+
+list = JSON.load(res.body)
+hash = list[0]
+
+puts <<-EOS
   <table border=0 width="256" height="64" cellspacing="0" cellpadding="0">
   <tr><td width="64">
   <img src=./img/#{hash["tier"]}.png width="64" height="64">
