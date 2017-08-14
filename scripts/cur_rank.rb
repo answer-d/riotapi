@@ -42,7 +42,7 @@ hash = list[0]
 puts <<-EOS
   <table border=0 width="256" height="64" cellspacing="0" cellpadding="0">
   <tr><td width="64">
-  <img src=./img/#{hash["tier"]}.png width="64" height="64">
+  <img src=./img/#{hash["tier"]+hash["rank"]}.png width="64" height="64">
   </td><td>
   <b><font size="5" color="white">
     #{hash["tier"]} #{hash["rank"]}<br>

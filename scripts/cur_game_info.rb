@@ -79,17 +79,16 @@ INS_V_MARGIN=7
     
     l_api = '/lol/league/v3/positions/by-summoner/' + elem["summonerId"].to_s
     l_uri = URI.parse URI.encode("#{URI_HEAD}#{l_api}#{URI_FOOT}")
-
-    puts "<!--#{l_uri}-->"
-
     l_res = Net::HTTP.get_response(l_uri)
-
-    puts "<!--#{l_res.body}-->"
-
+    
+    (puts "なにかがおきた" ; exit 1) if l_res.code != '200'
+    
     l_json = JSON.load(l_res.body).at(0)
     
     puts <<-EOS
-      <!--#{l_json}-->
+      <!--
+      #{l_json}
+      -->
       <tr height="#{INS_T_MARGIN}">
       <td width="#{teamId == 100 ? INS_L_MARGIN : INS_ICON_SIDES}"></td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2}"></td>
@@ -100,16 +99,16 @@ INS_V_MARGIN=7
       <td width="#{teamId == 100 ? INS_L_MARGIN : INS_ICON_SIDES}"></td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2}">
     EOS
-    #puts %!<div style="background-color : red"><img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}"></div>! if teamId == 100
-    puts %!<img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 100
-
+    puts <<-EOS if teamId == 100
+      <img src=./img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">
+    EOS
     puts <<-EOS
       </td>
       <td width="#{teamId == 100 ? ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2 : INS_ICON_SIDES}">
     EOS
-    #puts %!<div style="background-color : red"><img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}"></div>! if teamId == 200
-    puts %!<img src=./img/#{l_json["tier"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 200
-
+    puts <<-EOS if teamId == 200
+      <img src=./img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">
+    EOS
     puts <<-EOS
       </td><td width="#{teamId == 100 ? INS_ICON_SIDES : INS_L_MARGIN}"></td>
       </tr>
@@ -138,7 +137,7 @@ INS_V_MARGIN=7
       <td width="#{teamId == 100 ? INS_ICON_SIDES : INS_L_MARGIN}"></td>
       </tr>
     EOS
-  } if !json.nil?
+  }
   puts %!</table></td>!
   puts %!<td></td>! if teamId == 100
 }
