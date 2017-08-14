@@ -7,7 +7,7 @@ require 'json'
 require 'csv'
 
 #SUMMONER_ID = '6304677' #おれ
-#SUMMONER_ID = '6160658' #rainさん
+#SUMMONER_ID = '6160658' #Rainさん
 #SUMMONER_ID = '6179151' #スタンミさん
 #SUMMONER_ID = '6313201' #みらいさん
 #SUMMONER_ID = '6172666' #SPYGEAさん(だれ？)
@@ -16,7 +16,8 @@ require 'csv'
 #SUMMONER_ID = '7051645' #まゆりさん
 #SUMMONER_ID = '6188121' #なぎさっちさん
 #SUMMONER_ID = '6416807' #damさん
-SUMMONER_ID = '6470919' #yanyantkbさん
+#SUMMONER_ID = '6470919' #yanyantkbさん
+SUMMONER_ID = '7731016' #すうさん
 
 APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
 URI_HEAD = 'https://jp1.api.riotgames.com'
