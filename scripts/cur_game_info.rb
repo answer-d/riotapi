@@ -32,12 +32,9 @@ HEIGHT=ICON_HEIGHT*5+T_MARGIN
 
 KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
 
-mastery_list = CSV.read(File.expand_path(File.dirname($0)) + '/../data/mastery.csv')
-keystone_masteries = {}
-KEYSTONES.each{|item|
-  tmp = mastery_list.rassoc(item)
-  keystone_masteries[tmp[0]] = item if !tmp.nil?
-}
+mastery_list = CSV.read(File.expand_path(File.dirname($0)) + '/../data/mastery.csv') #配列の配列
+mastery_hash = mastery_list.inject({}){|h, elem| h[elem[0]] = elem[1]; h}
+keystone_masteries = KEYSTONES.inject({}){|h, elem| h[mastery_hash.key(elem)] = elem; h}
 
 uri = URI.parse URI.encode("#{URI_HEAD}#{URI_API}#{URI_FOOT}")
 res = Net::HTTP.get_response(uri)
@@ -82,7 +79,7 @@ INS_V_MARGIN=7
     l_uri = URI.parse URI.encode("#{URI_HEAD}#{l_api}#{URI_FOOT}")
     l_res = Net::HTTP.get_response(l_uri)
     
-    (puts "なにかがおきた" ; exit 1) if l_res.code != '200'
+    (puts "なにかがおきた(#{l_res.code})" ; exit 1) if l_res.code != '200'
     
     l_json = JSON.load(l_res.body).at(0)
     
@@ -141,6 +138,7 @@ INS_V_MARGIN=7
   }
   puts %!</table></td>!
   puts %!<td></td>! if teamId == 100
+  sleep 0.5 #API制限緩和用
 }
 puts %!</tr></table></body></html>!
 
