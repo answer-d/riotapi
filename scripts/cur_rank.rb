@@ -31,6 +31,9 @@ EOS
 if res.code == '403'
   puts '<font color="white">APIキー確認</font></body></html>'
   exit
+elsif res.code == '429'
+  puts '<font color="white">Rate Limit</font></body></html>'
+  exit
 end
 
 list = JSON.load(res.body)
