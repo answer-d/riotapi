@@ -1,10 +1,5 @@
-# 毎分実行
-# html generator
-
-require 'net/http'
-require 'uri'
-require 'json'
 require 'csv'
+require "#{File.expand_path(File.dirname($0))}/api_caller.rb"
 
 #SUMMONER_ID = '6304677' #おれ
 #SUMMONER_ID = '6160658' #Rainさん
@@ -17,13 +12,9 @@ require 'csv'
 #SUMMONER_ID = '6188121' #なぎさっちさん
 #SUMMONER_ID = '6416807' #damさん
 #SUMMONER_ID = '6470919' #yanyantkbさん
-SUMMONER_ID = '7731016' #すうさん
+#SUMMONER_ID = '7731016' #すうさん
 
-APIKEY = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
-URI_HEAD = 'https://jp1.api.riotgames.com'
-URI_API = '/lol/spectator/v3/active-games/by-summoner/' + SUMMONER_ID
-URI_FOOT = "?api_key=#{APIKEY}"
-
+def generate_html(name)
 WIDTH=1920
 ICON_WIDTH=(WIDTH*0.05).floor+1
 ICON_HEIGHT=111
@@ -31,25 +22,22 @@ T_MARGIN=122
 HEIGHT=ICON_HEIGHT*5+T_MARGIN
 
 KEYSTONES = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
-
 mastery_list = CSV.read(File.expand_path(File.dirname($0)) + '/../data/mastery.csv') #配列の配列
 mastery_hash = mastery_list.inject({}){|h, elem| h[elem[0]] = elem[1]; h}
 keystone_masteries = KEYSTONES.inject({}){|h, elem| h[mastery_hash.key(elem)] = elem; h}
 
-uri = URI.parse URI.encode("#{URI_HEAD}#{URI_API}#{URI_FOOT}")
-res = Net::HTTP.get_response(uri)
+summoner_json = APICaller.summoner_byname(name)
+json = APICaller.activegame_byid(summoner_json["id"])
 
-exit if res.code != '200'
-
-json = JSON.load(res.body)
-
-puts <<-EOS
+buf=""
+buf += <<-EOS
   <html>
   <head>
-  <meta http-equiv="Refresh" content="30">
+  <!--<meta http-equiv="Refresh" content="30">-->
   <title>マスタリー</title>
   </head>
   <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+  <!-- arg : #{ARGV[0]}(#{summoner_json["id"]}) -->
   <!--
   last update : #{DateTime.now}
   -->
@@ -70,20 +58,13 @@ INS_T_MARGIN=15
 INS_V_MARGIN=7
 
 [100,200].each{|teamId|
-  puts %!<td><table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0">!
+  buf += %!<td><table border=0 width="#{ICON_WIDTH}" height="#{ICON_HEIGHT*5}" cellspacing="0" cellpadding="0">!
   json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
     part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
     part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
+    l_json = APICaller.position_byid(elem["summonerId"])
     
-    l_api = '/lol/league/v3/positions/by-summoner/' + elem["summonerId"].to_s
-    l_uri = URI.parse URI.encode("#{URI_HEAD}#{l_api}#{URI_FOOT}")
-    l_res = Net::HTTP.get_response(l_uri)
-    
-    (puts "なにかがおきた(#{l_res.code})" ; exit 1) if l_res.code != '200'
-    
-    l_json = JSON.load(l_res.body).at(0)
-    
-    puts <<-EOS
+    buf += <<-EOS
       <!--
       #{l_json}
       -->
@@ -97,17 +78,17 @@ INS_V_MARGIN=7
       <td width="#{teamId == 100 ? INS_L_MARGIN : INS_ICON_SIDES}"></td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2}">
     EOS
-    puts <<-EOS if teamId == 100
+    buf += <<-EOS if teamId == 100
       <img src=./img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">
     EOS
-    puts <<-EOS
+    buf += <<-EOS
       </td>
       <td width="#{teamId == 100 ? ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2 : INS_ICON_SIDES}">
     EOS
-    puts <<-EOS if teamId == 200
+    buf += <<-EOS if teamId == 200
       <img src=./img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">
     EOS
-    puts <<-EOS
+    buf += <<-EOS
       </td><td width="#{teamId == 100 ? INS_ICON_SIDES : INS_L_MARGIN}"></td>
       </tr>
       <tr height="#{INS_V_MARGIN}">
@@ -119,14 +100,14 @@ INS_V_MARGIN=7
       <tr height="#{INS_ICON_SIDES}">
       <td width="#{teamId == 100 ? INS_L_MARGIN : INS_ICON_SIDES}">
     EOS
-    puts %!<img src="./img/#{part_keystone}.png" width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 200
-    puts <<-EOS
+    buf += %!<img src="./img/#{part_keystone}.png" width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 200
+    buf += <<-EOS
       </td><td width="#{teamId == 100 ? INS_ICON_SIDES : ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2}"></td>
       <td width="#{teamId == 100 ? ICON_WIDTH - INS_L_MARGIN - INS_ICON_SIDES*2 : INS_ICON_SIDES}"></td>
       <td width="#{teamId == 100 ? INS_ICON_SIDES : INS_L_MARGIN}">
     EOS
-    puts %!<img src="./img/#{part_keystone}.png" width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 100
-    puts <<-EOS
+    buf += %!<img src="./img/#{part_keystone}.png" width="#{INS_ICON_SIDES}" height="#{INS_ICON_SIDES}">! if teamId == 100
+    buf += <<-EOS
       </td></tr>
       <tr height="#{ICON_HEIGHT - INS_T_MARGIN - INS_V_MARGIN - INS_ICON_SIDES*2}">
       <td width="#{teamId == 100 ? INS_L_MARGIN : INS_ICON_SIDES}"></td>
@@ -136,9 +117,12 @@ INS_V_MARGIN=7
       </tr>
     EOS
   }
-  puts %!</table></td>!
-  puts %!<td></td>! if teamId == 100
+  buf += %!</table></td>!
+  buf += %!<td></td>! if teamId == 100
   sleep 0.5 #API制限緩和用
 }
-puts %!</tr></table></body></html>!
+buf += %!</tr></table></body></html>!
 
+File.open(File.expand_path(File.dirname($0)) + '/../html/' + summoner_json["id"].to_s + '.html', "w"){|f| f.puts buf}
+return summoner_json["id"]
+end

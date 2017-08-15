@@ -10,21 +10,25 @@ then
 fi
 
 echo "ゴミ掃除"
-rm -rf /var/www/scripts
+rm -rf /var/www/script
 rm -rf /var/www/conf
 rm -rf /var/www/data
-rm -rf /var/www/html/img
+rm -rf /var/www/html
+rm -rf /var/www/cgi-bin
 
 echo "りりーす"
-cp -r ./scripts /var/www/scripts
+cp -r ./script /var/www/script
 cp -r ./conf /var/www/conf
-cp -r ./img /var/www/html/img
+cp -r ./html /var/www/html
+cp -r ./cgi-bin /var/www/cgi-bin
 mkdir /var/www/data
+chown apache:apache /var/www/html
 
 echo "しょきか"
-ruby /var/www/scripts/champion.rb | tee /var/www/data/champion.csv
-ruby /var/www/scripts/mastery.rb | tee /var/www/data/mastery.csv
-ruby /var/www/scripts/summoner_list.rb | tee /var/www/data/summoner_list.csv
+#ruby /var/www/script/champion.rb | tee /var/www/data/champion.csv
+#ruby /var/www/script/mastery.rb | tee /var/www/data/mastery.csv
+cp -p ./data/champion.csv /var/www/data/champion.csv
+cp -p ./data/mastery.csv /var/www/data/mastery.csv
 
 echo "かくにん"
 ls -laR /var/www/*
