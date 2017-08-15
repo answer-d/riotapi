@@ -40,7 +40,7 @@ class APICaller
   def self.get_json(uri)
     uri = URI.parse URI.encode(uri)
     res = Net::HTTP.get_response(uri)
-    puts "APIが200以外で返った : #{uri}(#{res.code})" if res.code != '200'
+    (puts "APIコールでエラー : #{uri}(#{res.code})"; return res.code.to_i) if res.code != '200'
     json = JSON.load(res.body)
     return json
   end

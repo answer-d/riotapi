@@ -27,7 +27,11 @@ mastery_hash = mastery_list.inject({}){|h, elem| h[elem[0]] = elem[1]; h}
 keystone_masteries = keystone_names.inject({}){|h, elem| h[mastery_hash.key(elem)] = elem; h}
 
 summoner_json = APICaller.summoner_byname(name)
-json = APICaller.activegame_byid(summoner_json["id"])
+return summoner_json if summoner_json.kind_of?(Fixnum)
+
+summoner_id = summoner_json["id"].to_s
+json = APICaller.activegame_byid(summoner_id)
+return json if json.kind_of?(Fixnum)
 
 buf=""
 buf += <<-EOS
@@ -37,7 +41,7 @@ buf += <<-EOS
   <title>マスタリー</title>
   </head>
   <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-  <!-- arg : #{ARGV[0]}(#{summoner_json["id"]}) -->
+  <!-- arg : #{ARGV[0]}(#{summoner_id}) -->
   <!--
   last update : #{DateTime.now}
   -->
@@ -63,6 +67,7 @@ ins_v_margin=7
     part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
     part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
     l_json = APICaller.position_byid(elem["summonerId"])
+    return l_json if l_json.kind_of?(Fixnum)
     
     buf += <<-EOS
       <!--
@@ -123,6 +128,6 @@ ins_v_margin=7
 }
 buf += %!</tr></table></body></html>!
 
-File.open(File.expand_path(File.dirname($0)).gsub("cgi-bin", "html/") + summoner_json["id"].to_s + '.html', "w"){|f| f.puts buf}
-return summoner_json["id"]
+File.open(File.expand_path(File.dirname($0)).gsub("cgi-bin", "html/") + summoner_id + '.html', "w"){|f| f.puts buf}
+return summoner_id
 end
