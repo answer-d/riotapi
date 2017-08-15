@@ -67,7 +67,7 @@ ins_v_margin=7
     part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
     part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
     l_json = APICaller.position_byid(elem["summonerId"])
-    return l_json if l_json.kind_of?(Fixnum)
+    #return l_json if l_json.kind_of?(Fixnum)
     
     buf += <<-EOS
       <!--
@@ -105,13 +105,13 @@ ins_v_margin=7
       <tr height="#{ins_icon_sides}">
       <td width="#{teamId == 100 ? ins_l_margin : ins_icon_sides}">
     EOS
-    buf += %!<img src="./img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 200
+    buf += %!<img src="./img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 200 && !part_keystone.nil?
     buf += <<-EOS
       </td><td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}"></td>
       <td width="#{teamId == 100 ? icon_width - ins_l_margin - ins_icon_sides*2 : ins_icon_sides}"></td>
       <td width="#{teamId == 100 ? ins_icon_sides : ins_l_margin}">
     EOS
-    buf += %!<img src="./img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 100
+    buf += %!<img src="./img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 100 && !part_keystone.nil?
     buf += <<-EOS
       </td></tr>
       <tr height="#{icon_height - ins_t_margin - ins_v_margin - ins_icon_sides*2}">
