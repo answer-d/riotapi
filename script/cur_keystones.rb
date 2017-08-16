@@ -84,14 +84,14 @@ ins_v_margin=7
       <td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}">
     EOS
     buf += <<-EOS if teamId == 100
-      <img src=./img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{ins_icon_sides}" height="#{ins_icon_sides}">
+      <img src=../img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{ins_icon_sides}" height="#{ins_icon_sides}">
     EOS
     buf += <<-EOS
       </td>
       <td width="#{teamId == 100 ? icon_width - ins_l_margin - ins_icon_sides*2 : ins_icon_sides}">
     EOS
     buf += <<-EOS if teamId == 200
-      <img src=./img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{ins_icon_sides}" height="#{ins_icon_sides}">
+      <img src=../img/#{l_json.nil? ? 'UNRANK' : l_json["tier"]+l_json["rank"]}.png width="#{ins_icon_sides}" height="#{ins_icon_sides}">
     EOS
     buf += <<-EOS
       </td><td width="#{teamId == 100 ? ins_icon_sides : ins_l_margin}"></td>
@@ -105,13 +105,13 @@ ins_v_margin=7
       <tr height="#{ins_icon_sides}">
       <td width="#{teamId == 100 ? ins_l_margin : ins_icon_sides}">
     EOS
-    buf += %!<img src="./img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 200 && !part_keystone.nil?
+    buf += %!<img src="../img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 200 && !part_keystone.nil?
     buf += <<-EOS
       </td><td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}"></td>
       <td width="#{teamId == 100 ? icon_width - ins_l_margin - ins_icon_sides*2 : ins_icon_sides}"></td>
       <td width="#{teamId == 100 ? ins_icon_sides : ins_l_margin}">
     EOS
-    buf += %!<img src="./img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 100 && !part_keystone.nil?
+    buf += %!<img src="../img/#{part_keystone}.png" width="#{ins_icon_sides}" height="#{ins_icon_sides}">! if teamId == 100 && !part_keystone.nil?
     buf += <<-EOS
       </td></tr>
       <tr height="#{icon_height - ins_t_margin - ins_v_margin - ins_icon_sides*2}">
@@ -128,6 +128,6 @@ ins_v_margin=7
 }
 buf += %!</tr></table></body></html>!
 
-File.open(File.expand_path(File.dirname($0)).gsub("cgi-bin", "html/") + summoner_id + '.html', "w"){|f| f.puts buf}
+File.open(File.expand_path(File.dirname($0)).gsub("cgi-bin", "html/overlay/") + summoner_id + '.html', "w"){|f| f.puts buf}
 return summoner_id
 end

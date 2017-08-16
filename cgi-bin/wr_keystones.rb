@@ -17,7 +17,7 @@ EOS
 cgi = CGI.new
 name = cgi['name']
 
-puts "<!-- #{name} -->"
+puts "サモナーネーム：#{name}<br>"
 
 ret = generate_html(name)
 puts "何らかの何かが発生しました" if ret.nil?
@@ -33,7 +33,7 @@ when 429
 else
   puts <<-EOS
     下のURLをブラウザソースとして取り込んで下さいな！<br>
-    <h1>http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/#{ret}.html</h1><br>
+    <h1>http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/overlay/#{ret}.html</h1><br>
     ★このへんにcssとかの設定書く
   EOS
 end

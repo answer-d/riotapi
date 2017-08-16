@@ -22,7 +22,7 @@ cp -r ./conf /var/www/conf
 cp -r ./html /var/www/html
 cp -r ./cgi-bin /var/www/cgi-bin
 mkdir /var/www/data
-chown apache:apache /var/www/html
+chown apache. /var/www/html/overlay
 
 echo "しょきか"
 #ruby /var/www/script/champion.rb | tee /var/www/data/champion.csv
