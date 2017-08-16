@@ -6,10 +6,11 @@ Riot APIをコールしてjsonを返すメソッドの入ったクラス
 require 'net/http'
 require 'uri'
 require 'json'
+require File.expand_path(File.dirname(__FILE__)) + '/riotapi_exception.rb'
 
 class APICaller
   # 固定値軍団
-  @@apikey = File.open(File.expand_path(File.dirname($0)) + '/../conf/APIKEY').read.chomp
+  @@apikey = File.open(File.expand_path(File.dirname(__FILE__)) + '/../conf/APIKEY').read.chomp
   @@uri_head = "https://jp1.api.riotgames.com"
   @@uri_foot = "?api_key=#{@@apikey}"
 
@@ -17,7 +18,17 @@ class APICaller
   # ret : サモナー情報(summonerid, accountid, summonername等)
   def self.summoner_byname(name)
     uri_api = "/lol/summoner/v3/summoners/by-name/#{name}"
-    json = get_json(@@uri_head + uri_api + @@uri_foot)
+
+    begin
+      json = get_json(@@uri_head + uri_api + @@uri_foot)
+    rescue RiotAPIException => e
+      case e.code
+      when 404
+        e.msg += "<br>\nそんなサモナーネームはないと思います(SN : #{name})"
+      end
+      raise e
+    end
+
     return json
   end
 
@@ -25,7 +36,17 @@ class APICaller
   # ret : 進行中ゲーム情報
   def self.activegame_byid(id)
     uri_api = "/lol/spectator/v3/active-games/by-summoner/#{id}"
-    json = get_json(@@uri_head + uri_api + @@uri_foot)
+    
+    begin
+      json = get_json(@@uri_head + uri_api + @@uri_foot)
+    rescue RiotAPIException => e
+      case e.code
+      when 404
+        e.msg += "<br>\nゲーム中じゃ無いと思います、確認して再実行オナシャス(SID : #{id})"
+      end
+      raise e
+    end
+
     return json
   end
   
@@ -33,7 +54,13 @@ class APICaller
   # ret : ランク(Tier, Division等)
   def self.position_byid(id)
     uri_api = "/lol/league/v3/positions/by-summoner/#{id}"
-    json = get_json(@@uri_head + uri_api + @@uri_foot).at(0)
+    
+    begin
+      json = get_json(@@uri_head + uri_api + @@uri_foot).at(0)
+    rescue RiotAPIException => e
+      raise e
+    end
+
     return json
   end
 
@@ -41,7 +68,13 @@ class APICaller
   # ret : マスタリー情報(static)
   def self.mastery_static()
     uri_api = "/lol/static-data/v3/masteries"
-    json = get_json(@@uri_head + uri_api + @@uri_foot + '&locale=ja_JP')
+    
+    begin
+      json = get_json(@@uri_head + uri_api + @@uri_foot + '&locale=ja_JP')
+    rescue RiotAPIException => e
+      raise e
+    end
+
     return json
   end
   
@@ -49,7 +82,13 @@ class APICaller
   # ret : チャンピオン情報(static)
   def self.champion_static()
     uri_api = "/lol/static-data/v3/champions"
-    json = get_json(@@uri_head + uri_api + @@uri_foot + '&locale=ja_JP')
+    
+    begin
+      json = get_json(@@uri_head + uri_api + @@uri_foot + '&locale=ja_JP')
+    rescue RiotAPIException => e
+      raise e
+    end
+
     return json
   end
   
@@ -61,7 +100,23 @@ class APICaller
   def self.get_json(uri)
     uri = URI.parse URI.encode(uri)
     res = Net::HTTP.get_response(uri)
-    (puts "APIコールでエラー : #{uri}(#{res.code})"; return res.code.to_i) if res.code != '200'
+    
+    if res.code != '200'
+      code = res.code.to_i
+      msg = "APIコールでエラー : #{uri}(#{code})"
+      
+      case code
+      when 400
+        msg += "<br>\nベリーバッドなリクエスト、おこです"
+      when 403
+        msg += "<br>\nAPIキーが切れてるかもしれない祭り。あんでぃーを怒れ"
+      when 429
+        msg += "<br>\nれーとりみっとです、加減してくださいお願いします何でもしますから(何でもするとは言っていない)"
+      end
+      
+      raise RiotAPIException.new(code, msg)
+    end
+    
     json = JSON.load(res.body)
     return json
   end
