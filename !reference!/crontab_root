@@ -1,0 +1,1 @@
+*/1 * * * * ruby /var/www/script/cur_rank.rb > /var/www/html/rank.html
