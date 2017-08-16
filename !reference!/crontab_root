@@ -1,1 +1,2 @@
 */1 * * * * ruby /var/www/script/cur_rank.rb > /var/www/html/rank.html
+0 * * * * find /var/www/html/overlay/ -mtime +1 -exec rm -f {} \;

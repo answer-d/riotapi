@@ -34,10 +34,12 @@ when 404
 when 429
   puts "<br>れーとりみっとです、加減してくださいお願いします何でもしますから(何でもするとは言っていない)"
 else
+  uri = "http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/overlay/#{ret}.html"
   puts <<-EOS
     下のURLをブラウザソースとして取り込んで下さいな！<br>
-    <h1>http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/overlay/#{ret}.html</h1><br>
-    ★このへんにcssとかの設定書く
+    <a href="#{uri}" target="_blank"><h1>#{uri}</h1></a>
+    <hr>
+    ★このへんに使い方とかcssとかの設定書く
   EOS
 end
 
