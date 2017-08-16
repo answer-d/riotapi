@@ -10,12 +10,11 @@ require 'cgi'
 require "#{File.expand_path(File.dirname(__FILE__))}/../script/html_generator.rb"
 
 # ヘッダ的なところ
+puts "Content-type: text/html\n\n"
 puts <<-EOS
-Content-type: text/html
-
-<html>
-<head><title>誘導ぺーじ</title></html>
-<body>
+  <html>
+  <head><title>誘導ぺーじ</title></html>
+  <body>
 EOS
 
 # 多重起動制御
@@ -34,8 +33,9 @@ puts "サモナーネーム：#{name}<br>"
 begin
   ret = HtmlGenerator.cur_keystones(name)
 rescue RiotAPIException => e
-  puts e.msg + '<hr><a href="/">戻りたい</a></body></html>'
-  exit
+  puts '<font color="red">' + e.msg + '</font>'
+  puts '<hr><a href="/">戻りたい</a></body></html>'
+  exit 2
 end
 
 uri = "http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/overlay/#{ret}.html"
@@ -48,7 +48,9 @@ EOS
 
 # フッタ的な
 puts <<-EOS
-<hr><a href="/">戻りたい</a>
-</body></html>
+  <hr><a href="/">戻りたい</a>
+  </body></html>
 EOS
+
+exit 0
 
