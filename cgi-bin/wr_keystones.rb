@@ -3,9 +3,6 @@
 require 'cgi'
 require "#{File.expand_path(File.dirname($0))}/../script/cur_keystones.rb"
 
-#ここに同時起動制御入れよう
-
-
 puts <<-EOS
 Content-type: text/html
 
@@ -13,6 +10,12 @@ Content-type: text/html
 <head><title>誘導ぺーじ</title></html>
 <body>
 EOS
+
+proc_count = `ps -ef | grep #$0 | grep -v grep | wc -l`.to_i
+if proc_count > 1
+  puts '他に実行中の人がいます、ちょっと待って再実行たのまい<hr><a href="/index.html">戻りたい</a></body></html>'
+  exit 1
+end
 
 cgi = CGI.new
 name = cgi['name']
