@@ -20,38 +20,41 @@ class APICaller
   @@uri_head = "https://jp1.api.riotgames.com"
   @@uri_foot = "?api_key=#{@@apikey}"
   
+  @@logger = Logger.new("#{@@basedir}/../log/#{File.basename($0, "rb")}.log")
+  @@logger.level = eval @@conf["logger"]["log_level"]
+  
   # arg : SN
   # ret : サモナー情報(summonerid, accountid, summonername等)
   def self.summoner_byname(name)
-    @@logger.debug("summoner_byname(#{name}) start")
+    @@logger.debug("#{@@basename} : summoner_byname(#{name}) start")
 
     if name.empty?
       e = RiotAPIException.new(0, "サモナーネームに何か入れて下さいよホンマ")
-      @@logger.info("summoner name is empty. raise #{e}")
+      @@logger.info("#{@@basename} : summoner name is empty. raise #{e}")
       raise e
     end
     
     uri_api = "/lol/summoner/v3/summoners/by-name/#{name}"
-    @@logger.debug("uri_api : #{uri_api}")
+    @@logger.debug("#{@@basename} : uri_api : #{uri_api}")
 
     begin
-      @@logger.debug("call get_json(#{@@uri_head + uri_api + @@uri_foot})")
+      @@logger.debug("#{@@basename} : call get_json(#{@@uri_head + uri_api + @@uri_foot})")
       json = get_json(@@uri_head + uri_api + @@uri_foot)
-      @@logger.debug("ret get_json(#{@@uri_head + uri_api + @@uri_foot}) => #{json}")
+      @@logger.debug("#{@@basename} : ret get_json(#{@@uri_head + uri_api + @@uri_foot}) => #{json}")
     rescue RiotAPIException => e
-      @@logger.warn("RiotAPIException occured : #{e}")
+      @@logger.warn("#{@@basename} : RiotAPIException occured : #{e}")
       case e.code
       when 404
-        @@logger.info("404 not found(SN : #{name})")
+        @@logger.info("#{@@basename} : 404 not found(SN : #{name})")
         e.msg += "<br>\nそんなサモナーネームはないと思います"
       else
-        @@logger.error("unknown code : #{e.code}")
+        @@logger.error("#{@@basename} : unknown code : #{e.code}")
       end
-      @@logger.warn("propagates #{e}")
+      @@logger.warn("#{@@basename} : propagates #{e}")
       raise e
     end
     
-    @@logger.debug("summoner_byname(#{name}) end => #{json}")
+    @@logger.debug("#{@@basename} : summoner_byname(#{name}) end => #{json}")
     return json
   end
 
