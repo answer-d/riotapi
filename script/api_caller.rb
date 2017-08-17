@@ -6,29 +6,52 @@ Riot APIをコールしてjsonを返すメソッドの入ったクラス
 require 'net/http'
 require 'uri'
 require 'json'
-require File.expand_path(File.dirname(__FILE__)) + '/riotapi_exception.rb'
+require 'yaml'
+require 'logger'
+require_relative 'riotapi_exception.rb'
 
 class APICaller
   # 固定値軍団
-  @@apikey = File.open(File.expand_path(File.dirname(__FILE__)) + '/../conf/APIKEY').read.chomp
+  @@basedir = File.expand_path(File.dirname(__FILE__))
+  @@basename = File.basename(__FILE__, ".rb")
+  @@conf = YAML.load_file("#{@@basedir}/../conf/app.yml")
+
+  @@apikey = @@conf["api_key"]
   @@uri_head = "https://jp1.api.riotgames.com"
   @@uri_foot = "?api_key=#{@@apikey}"
-
+  
   # arg : SN
   # ret : サモナー情報(summonerid, accountid, summonername等)
   def self.summoner_byname(name)
-    uri_api = "/lol/summoner/v3/summoners/by-name/#{name}"
+    @@logger.debug("summoner_byname(#{name}) start")
 
-    begin
-      json = get_json(@@uri_head + uri_api + @@uri_foot)
-    rescue RiotAPIException => e
-      case e.code
-      when 404
-        e.msg += "<br>\nそんなサモナーネームはないと思います(SN : #{name})"
-      end
+    if name.empty?
+      e = RiotAPIException.new(0, "サモナーネームに何か入れて下さいよホンマ")
+      @@logger.info("summoner name is empty. raise #{e}")
       raise e
     end
+    
+    uri_api = "/lol/summoner/v3/summoners/by-name/#{name}"
+    @@logger.debug("uri_api : #{uri_api}")
 
+    begin
+      @@logger.debug("call get_json(#{@@uri_head + uri_api + @@uri_foot})")
+      json = get_json(@@uri_head + uri_api + @@uri_foot)
+      @@logger.debug("ret get_json(#{@@uri_head + uri_api + @@uri_foot}) => #{json}")
+    rescue RiotAPIException => e
+      @@logger.warn("RiotAPIException occured : #{e}")
+      case e.code
+      when 404
+        @@logger.info("404 not found(SN : #{name})")
+        e.msg += "<br>\nそんなサモナーネームはないと思います"
+      else
+        @@logger.error("unknown code : #{e.code}")
+      end
+      @@logger.warn("propagates #{e}")
+      raise e
+    end
+    
+    @@logger.debug("summoner_byname(#{name}) end => #{json}")
     return json
   end
 
@@ -112,6 +135,8 @@ class APICaller
         msg += "<br>\nAPIキーが切れてるかもしれない祭り。あんでぃーを怒れ"
       when 429
         msg += "<br>\nれーとりみっとです、加減してくださいお願いします何でもしますから(何でもするとは言っていない)"
+      when 500
+        msg += "<br>\nRiotAPI側のエラー。Rito plz"
       end
       
       raise RiotAPIException.new(code, msg)

@@ -4,7 +4,7 @@ HTML生成器
 
 require 'date'
 require 'csv'
-require "#{File.expand_path(File.dirname(__FILE__))}/api_caller.rb"
+require_relative 'api_caller.rb'
 
 class HtmlGenerator
   # 現在のランクを表示

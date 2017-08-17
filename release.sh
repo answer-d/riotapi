@@ -20,15 +20,18 @@ echo "りりーす"
 cp -r ./script /var/www/script
 cp -r ./conf /var/www/conf
 cp -r ./html /var/www/html
+chown apache. /var/www/html/overlay
 cp -r ./cgi-bin /var/www/cgi-bin
 mkdir /var/www/data
-mkdir /var/www/log
-chown apache. /var/www/html/overlay
-chmod 666 /var/www/log
+if [ ! -e /var/www/log ]; then
+  mkdir /var/www/log
+  chown apache. /var/www/log
+  chmod 755 /var/www/log
+fi
 
 echo "しょきか"
-#ruby /var/www/script/champion.rb | tee /var/www/data/champion.csv
-#ruby /var/www/script/mastery.rb | tee /var/www/data/mastery.csv
+#ruby /var/www/script/main_champion.rb | tee /var/www/data/champion.csv
+#ruby /var/www/script/main_mastery.rb | tee /var/www/data/mastery.csv
 cp -p ./data/champion.csv /var/www/data/champion.csv
 cp -p ./data/mastery.csv /var/www/data/mastery.csv
 
