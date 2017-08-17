@@ -20,7 +20,7 @@ class APICaller
   @@uri_head = "https://jp1.api.riotgames.com"
   @@uri_foot = "?api_key=#{@@apikey}"
   
-  @@logger = Logger.new("#{@@basedir}/../log/#{File.basename($0, "rb")}.log")
+  @@logger = Logger.new("#{@@basedir}/../log/#{File.basename($0, ".rb")}.log")
   @@logger.level = eval @@conf["logger"]["log_level"]
   
   # arg : SN
@@ -177,7 +177,8 @@ class APICaller
     
     json = JSON.load(res.body)
     
-    @@logger.info("#{@@basename} : get_json(#{uri}) end => #{json}")
+    #@@logger.info("#{@@basename} : get_json(#{uri}) end => #{json}")
+    @@logger.info("#{@@basename} : get_json(#{uri}) end")
     return json
   end
 end

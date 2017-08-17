@@ -9,10 +9,10 @@ require_relative 'api_caller.rb'
 class HtmlGenerator
   # 固定値軍団
   @@basedir = File.expand_path(File.dirname(__FILE__))
-  @@basename = File.basename($0, ".rb")
+  @@basename = File.basename(__FILE__, ".rb")
   @@conf = YAML.load_file("#{@@basedir}/../conf/app.yml")
   
-  @@logger = Logger.new("#{@@basedir}/../log/#{File.basename($0, "rb")}.log")
+  @@logger = Logger.new("#{@@basedir}/../log/#{File.basename($0, ".rb")}.log")
   @@logger.level = eval @@conf["logger"]["log_level"]
   
   # 現在のランクを表示
@@ -28,7 +28,7 @@ class HtmlGenerator
     begin
       @@logger.debug("#{@@basename} : call APICaller.position_byid(#{summoner_id})")
       hash = APICaller.position_byid(summoner_id)
-      @@logger.debug("#{@@basename} : ret APICaller.position_byid(#{summoner_id}) => #{hash}")
+      @@logger.debug("#{@@basename} : ret APICaller.position_byid(#{summoner_id})")
     rescue RiotAPIException => e
       @@logger.warn("#{@@basename} : #{e} occured")
       @@logger.warn("#{@@basename} : propagates #{e}")
@@ -55,7 +55,7 @@ class HtmlGenerator
       </html>
     EOS
     
-    @@logger.info("#{@@basename} : cur_rank(#{summoner_id}) end => buf")
+    @@logger.info("#{@@basename} : cur_rank(#{summoner_id}) end => #{buf}")
     return buf
   end
   
@@ -77,13 +77,13 @@ class HtmlGenerator
     mastery_list = CSV.read(File.expand_path(File.dirname(__FILE__)) + '/../data/mastery.csv') #配列の配列
     mastery_hash = mastery_list.inject({}){|h, elem| h[elem[0]] = elem[1]; h} #ハッシュ化
     keystone_masteries = keystone_names.inject({}){|h, elem| h[mastery_hash.key(elem)] = elem; h} #キーストーンだけ抜き出し
-    @@logger.debug("keystone_masteries : #{keystone_masteries}")
+    @@logger.debug("#{@@basename} : keystone_masteries=#{keystone_masteries}")
 
     # サモナーネームからサモナーIDを引っ張る
     begin
       @@logger.debug("#{@@basename} : call APICaller.summoner_byname(#{name})")
       summoner_json = APICaller.summoner_byname(name)
-      @@logger.debug("#{@@basename} : ret APICaller.summoner_byname(#{name}) => #{summoner_json}")
+      @@logger.debug("#{@@basename} : ret APICaller.summoner_byname(#{name})")
     rescue RiotAPIException => e
       @@logger.warn("#{@@basename} : #{e} occured")
       @@logger.warn("#{@@basename} : propagates #{e}")
@@ -96,7 +96,7 @@ class HtmlGenerator
     begin
       @@logger.debug("#{@@basename} : call APICaller.activegame_byid(#{summoner_id})")
       json = APICaller.activegame_byid(summoner_id)
-      @@logger.debug("#{@@basename} : ret APICaller.activegame_byid(#{summoner_id}) => #{json}")
+      @@logger.debug("#{@@basename} : ret APICaller.activegame_byid(#{summoner_id})")
     rescue RiotAPIException => e
       @@logger.warn("#{@@basename} : #{e} occured")
       @@logger.warn("#{@@basename} : propagates #{e}")
@@ -108,13 +108,14 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
-      <title>マスタリー</title>
+      <meta http-equiv="Pragma" content="no-cache">
+      <meta http-equiv="Cache-Control" content="no-cache">
+      <meta http-equiv="Expires" content="0">
+      <!-- last update : #{DateTime.now} -->
+      <title>#{name}</title>
       </head>
       <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
       <!-- arg : #{name}(#{summoner_id}) -->
-      <!--
-      #{json}
-      -->
       <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
       <tr height="#{window_t_margin}">
       <td width="#{icon_width}"></td>
@@ -131,12 +132,12 @@ class HtmlGenerator
         @@logger.debug("#{@@basename} : loop for participant=#{elem["summonerName"]} - #{elem["summonerId"]} start")
         part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
         part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
-        @@logger.debug("#{@@basename} : part_keystone=#{partkeystone}")
+        @@logger.debug("#{@@basename} : part_keystone=#{part_keystone}")
         
         begin
           @@logger.debug("#{@@basename} : call APICaller.position_byid(#{elem["summonerId"]})")
           l_json = APICaller.position_byid(elem["summonerId"])
-          @@logger.debug("#{@@basename} : ret APICaller.position_byid(#{elem["summonerId"]}) => #{l_json}")
+          @@logger.debug("#{@@basename} : ret APICaller.position_byid(#{elem["summonerId"]})")
         rescue RiotAPIException => e
           @@logger.warn("#{@@basename} : #{e} occured")
           e.msg += "<br>\nランク情報を引くのに失敗したンゴ…(#{elem["summonerName"]} - #{elem["summonerId"]})"
@@ -150,9 +151,6 @@ class HtmlGenerator
         @@logger.debug("#{@@basename} : img_keystone=#{img_keystone}")
 
         buf += <<-EOS
-          <!--
-          #{l_json}
-          -->
           <tr height="#{ins_t_margin}">
           <td width="#{teamId == 100 ? ins_l_margin : ins_icon_sides}"></td>
           <td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}"></td>
