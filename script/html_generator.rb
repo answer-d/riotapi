@@ -48,7 +48,7 @@ class HtmlGenerator
       <tr><td width="#{icon_sides}">
       <img src=./img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
       </td><td>
-      <b><font #{font_options}>#{hash["tier"]} #{hash["rank"]}<br>#{hash["leaguePoints"]}LP</font></b>
+      <b><font #{font_options}>#{hash["tier"]} #{hash["rank"]}<br>#{hash["leaguePoints"]}LP#{" "+hash["miniSeries"]["progress"].gsub("W", "○").gsub("L", "×").gsub("N", "-") if hash["leaguePoints"] == 100}</font></b>
       </td></tr>
       </table>
       </body>
