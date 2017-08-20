@@ -29,7 +29,7 @@ def main
   begin
     ret = HtmlGenerator.cur_keystones(name)
   rescue RiotAPIException => e
-    puts '<p><font color="red">' + e.msg + '</font></p>'
+    puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
     puts_footer
     exit 2
   end
@@ -38,11 +38,12 @@ def main
   puts <<-EOS
     <p>
     下のURLをブラウザソースとして取り込んで下さいな！<br>
-    <a href="#{uri}" target="_blank"><h1>#{uri}</h1></a>
+    <a href="#{uri}" target="_blank"><h2>#{uri}</h2></a>
     </p>
     <hr>
     <p>
-    ★このへんに使い方とかcssとかの設定書く
+    <h3>設定</h3>
+    ★CSS
     </p>
   EOS
 

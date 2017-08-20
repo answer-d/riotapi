@@ -46,7 +46,7 @@ class APICaller
       case e.code
       when 404
         @@logger.info("#{@@basename} : 404 not found(SN : #{name})")
-        e.msg += "<br>\nそんなサモナーネームはないと思います"
+        e.msg += "\nそんなサモナーネームはないと思います"
       else
         @@logger.error("#{@@basename} : unknown code : #{e.code}")
       end
@@ -73,7 +73,7 @@ class APICaller
       case e.code
       when 404
         @@logger.info("#{@@basename} : 404 not found(SN : #{id})")
-        e.msg += "<br>\nゲーム中じゃ無いと思います、確認して再実行オナシャス(SID : #{id})"
+        e.msg += "\nゲーム中じゃ無いと思います、確認して再実行オナシャス(SID : #{id})"
       end
       @@logger.warn("#{@@basename} : propagates #{e}")
       raise e
@@ -160,13 +160,13 @@ class APICaller
       
       case code
       when 400
-        msg += "<br>\nベリーバッドなリクエスト、おこです"
+        msg += "\nベリーバッドなリクエスト、おこです"
       when 403
-        msg += "<br>\nAPIキーが切れてるかもしれない祭り。あんでぃーを怒れ"
+        msg += "\nAPIキーが切れてるかもしれない祭り。あんでぃーを怒れ"
       when 429
-        msg += "<br>\nれーとりみっとです、加減してくださいお願いします何でもしますから(何でもするとは言っていない)"
+        msg += "\nれーとりみっとです、加減してくださいお願いします何でもしますから(何でもするとは言っていない)"
       when 500
-        msg += "<br>\nRiotAPI側のエラー、Rito plz"
+        msg += "\nRiotAPI側のエラー、Rito plz"
       end
       
       e = RiotAPIException.new(code, msg)

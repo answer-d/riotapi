@@ -11,4 +11,8 @@ class RiotAPIException < StandardError
     @code = code
     @msg = msg
   end
+
+  def msg_to_html()
+    return @msg.gsub("\n", "<br>\n")
+  end
 end
