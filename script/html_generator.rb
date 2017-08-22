@@ -22,7 +22,7 @@ class HtmlGenerator
     refresh_rate = '30' #秒
     window_width = '256' #px
     window_height = '64' #px
-    icon_sides = '64' #px
+    icon_sides = window_height
     font_options = 'size="5" color="white"'
 
     begin
@@ -66,6 +66,7 @@ class HtmlGenerator
     return buf
   end
   
+  # キーストーンマスタリーと現在のランクを表示
   def self.cur_keystones(name)
     @@logger.info("#{@@basename} : cur_keystones(#{name}) start")
     
