@@ -1,4 +1,4 @@
-api_key: RGAPI-c7fc5a2a-53a8-4406-a496-865bd8773103
+api_key: RGAPI-2e2e48bb-dba8-4dd6-9953-abe0440cf497
 logger:
-  # Logger::(DEBUG|INFO|WARN|...)
+  # Logger::(DEBUG|INFO|WARN)
   log_level: Logger::DEBUG

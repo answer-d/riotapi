@@ -23,11 +23,13 @@ def main
   # パラメータ処理
   cgi = CGI.new
   name = cgi['name']
+  show_position = cgi['show_position'] == 'true' ? true : false
   puts "<p>サモナーネーム：#{name}</p>"
+  puts "<p>ランク表示：#{show_position}</p>"
   
   # html生成器に渡す
   begin
-    ret = HtmlGenerator.cur_keystones(name)
+    ret = HtmlGenerator.cur_keystones(name, show_position)
   rescue RiotAPIException => e
     puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
     puts_footer

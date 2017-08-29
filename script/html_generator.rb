@@ -67,8 +67,8 @@ class HtmlGenerator
   end
   
   # キーストーンマスタリーと現在のランクを表示
-  def self.cur_keystones(name)
-    @@logger.info("#{@@basename} : cur_keystones(#{name}) start")
+  def self.cur_keystones(name, show_position)
+    @@logger.info("#{@@basename} : cur_keystones(#{name}, #{show_position}) start")
     
     window_width=1920 #全体の横幅
     icon_width=(window_width*0.05).floor+1 #チャンピオン情報の横幅
@@ -132,6 +132,7 @@ class HtmlGenerator
       <tr>
     EOS
     
+    # サモナー毎に繰り返すところ
     img_options = %!width="#{ins_icon_sides}" height="#{ins_icon_sides}"!
     [100,200].each{|teamId|
       @@logger.debug("#{@@basename} : loop for teamId=#{teamId} start")
@@ -142,20 +143,24 @@ class HtmlGenerator
         part_keystone = part_masteries.find{|i| keystone_masteries.keys.include? i}
         @@logger.debug("#{@@basename} : part_keystone=#{part_keystone}")
         
-        begin
-          @@logger.debug("#{@@basename} : call APICaller.position_byid(#{elem["summonerId"]})")
-          l_json = APICaller.position_byid(elem["summonerId"])
-          @@logger.debug("#{@@basename} : ret APICaller.position_byid(#{elem["summonerId"]})")
-        rescue RiotAPIException => e
-          @@logger.warn("#{@@basename} : #{e} occured")
-          e.msg += "\nランク情報を引くのに失敗したンゴ…(#{elem["summonerName"]} - #{elem["summonerId"]})"
-          @@logger.warn("#{@@basename} : propagates #{e}")
-          raise e
+        # ランク情報引っ張る部分
+        if show_position
+          begin
+            @@logger.debug("#{@@basename} : call APICaller.position_byid(#{elem["summonerId"]})")
+            l_json = APICaller.position_byid(elem["summonerId"])
+            @@logger.debug("#{@@basename} : ret APICaller.position_byid(#{elem["summonerId"]})")
+          rescue RiotAPIException => e
+            @@logger.warn("#{@@basename} : #{e} occured")
+            e.msg += "\nランク情報を引くのに失敗したンゴ…(#{elem["summonerName"]} - #{elem["summonerId"]})"
+            @@logger.warn("#{@@basename} : propagates #{e}")
+            raise e
+          end
+
+          img_rank = %!../img/#{l_json.nil? ? "UNRANK" : l_json["tier"]+l_json["rank"]}.png!
+          @@logger.debug("#{@@basename} : img_rank=#{img_rank}")
         end
 
-        img_rank = %!../img/#{l_json.nil? ? "UNRANK" : l_json["tier"]+l_json["rank"]}.png!
         img_keystone = %!../img/#{part_keystone}.png!
-        @@logger.debug("#{@@basename} : img_rank=#{img_rank}")
         @@logger.debug("#{@@basename} : img_keystone=#{img_keystone}")
 
         buf += <<-EOS
@@ -169,12 +174,12 @@ class HtmlGenerator
           <td width="#{teamId == 100 ? ins_l_margin : ins_icon_sides}"></td>
           <td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}">
         EOS
-        buf += %!<img src="#{img_rank}" #{img_options}>! if teamId == 100
+        buf += %!<img src="#{img_rank}" #{img_options}>! if show_position && teamId == 100
         buf += <<-EOS
           </td>
           <td width="#{teamId == 100 ? icon_width - ins_l_margin - ins_icon_sides*2 : ins_icon_sides}">
         EOS
-        buf += %!<img src=#{img_rank} #{img_options}>! if teamId == 200
+        buf += %!<img src=#{img_rank} #{img_options}>! if show_position && teamId == 200
         buf += <<-EOS
           </td><td width="#{teamId == 100 ? ins_icon_sides : ins_l_margin}"></td>
           </tr>
@@ -220,7 +225,7 @@ class HtmlGenerator
       f.puts buf
     }
     
-    @@logger.info("#{@@basename} : cur_keystones(#{name}) end => #{summoner_id}")
+    @@logger.info("#{@@basename} : cur_keystones(#{name}, #{show_position}) end => #{summoner_id}")
     return summoner_id
   end
 end
