@@ -49,7 +49,7 @@ class HtmlGenerator
       <!-- last update : #{DateTime.now} -->
       <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
       <tr><td width="#{icon_sides}">
-      <img src=./img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
+      <img src=../img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
       </td><td>
       <b><font #{font_options}>
       #{hash["tier"]} #{hash["rank"]}<br>
