@@ -72,7 +72,7 @@ class APICaller
       @@logger.warn("#{@@basename} : #{e} occured")
       case e.code
       when 404
-        @@logger.info("#{@@basename} : 404 not found(SN : #{id})")
+        @@logger.info("#{@@basename} : 404 not found(id : #{id})")
         e.msg += "\nゲーム中じゃ無いと思います、確認して再実行オナシャス(SID : #{id})"
       end
       @@logger.warn("#{@@basename} : propagates #{e}")

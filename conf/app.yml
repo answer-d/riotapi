@@ -1,4 +1,4 @@
-api_key: <put api_key here>
+api_key: 
 logger:
   # Logger::(DEBUG|INFO|WARN)
   log_level: Logger::DEBUG

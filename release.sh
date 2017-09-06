@@ -3,8 +3,7 @@
 echo "はじまり"
 
 uid_chk=`id | sed 's/uid=\([0-9]*\)(.*/\1/'`
-if [ $uid_chk -ne 0 ]
-then
+if [ $uid_chk -ne 0 ] ; then
   echo "rootで実行してね"
   exit 1
 fi
@@ -20,7 +19,6 @@ echo "りりーす"
 cp -r ./script /var/www/script
 cp -r ./conf /var/www/conf
 cp -r ./html /var/www/html
-chown apache. /var/www/html/overlay
 cp -r ./cgi-bin /var/www/cgi-bin
 mkdir /var/www/data
 if [ ! -e /var/www/log ]; then
@@ -32,7 +30,7 @@ fi
 echo "しょきか"
 #ruby /var/www/script/main_champion.rb | tee /var/www/data/champion.csv
 #ruby /var/www/script/main_mastery.rb | tee /var/www/data/mastery.csv
-cp -p ./data/champion.csv /var/www/data/champion.csv
+#cp -p ./data/champion.csv /var/www/data/champion.csv
 cp -p ./data/mastery.csv /var/www/data/mastery.csv
 
 echo "かくにん"

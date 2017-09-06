@@ -8,13 +8,20 @@ def main
   
   # パラメータ処理
   cgi = CGI.new
-  id = cgi['id']
+  name = cgi['name']
+  show_position = cgi['show_position']
   
   # html生成器に渡す
   begin
-    ret = HtmlGenerator.cur_rank(id)
+    ret = HtmlGenerator.wr_cur_keystones(name, show_position)
   rescue RiotAPIException => e
-    puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
+    puts <<-EOS
+    エラーしました…<br>
+    <font color="red">#{e.msg_to_html}</font>
+    <hr>
+    <a href="/keystone.html">戻りたい</a>
+    EOS
+
     exit 2
   end
 

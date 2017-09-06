@@ -10,46 +10,41 @@ require 'cgi'
 require_relative '../script/html_generator.rb'
 
 def main
-  puts_header
+  puts HtmlGenerator.cgi_header
   
   # 多重起動制御
-  proc_count = `ps -ef | grep #$0 | grep -v grep | wc -l`.to_i
-  if proc_count > 1
-    puts '<p>他に実行中の人がいます、ちょっと待ってから再実行たのまい</p>'
-    puts_footer
-    exit 1
-  end
+  #proc_count = `ps -ef | grep #$0 | grep -v grep | wc -l`.to_i
+  #if proc_count > 1
+  #  puts '<p>他に実行中の人がいます、ちょっと待ってから再実行たのまい</p>'
+  #  puts_footer
+  #  exit 1
+  #end
   
   # パラメータ処理
   cgi = CGI.new
-  name = cgi['name']
+  id = cgi['id']
   show_position = cgi['show_position'] == 'true' ? true : false
-  puts "<p>サモナーネーム：#{name}</p>"
-  puts "<p>ランク表示：#{show_position}</p>"
   
   # html生成器に渡す
   begin
-    ret = HtmlGenerator.cur_keystones(name, show_position)
+    ret = HtmlGenerator.cur_keystones(id, show_position)
   rescue RiotAPIException => e
-    puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
-    puts_footer
-    exit 2
+    case e.code
+    when 404 # ゲーム中じゃないときは30秒に一回リロードさせる
+      puts <<-EOS
+        <html>
+        <head><meta http-equiv="Refresh" content="30"></head>
+        <body><font color="white">試合開始待機中</font></body>
+        </html>
+      EOS
+    else
+      puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
+      exit 2
+    end
   end
 
-  uri = "http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/overlay/#{ret}.html"
-  puts <<-EOS
-    <p>
-    下のURLをブラウザソースとして取り込んで下さいな！<br>
-    <a href="#{uri}" target="_blank"><h2>#{uri}</h2></a>
-    </p>
-    <hr>
-    <p>
-    <h3>設定</h3>
-    ★CSS
-    </p>
-  EOS
+  puts ret
 
-  puts_footer
   exit 0
 end
 
@@ -58,14 +53,6 @@ def puts_header()
   puts <<-EOS
 Content-type: text/html
 
-<html><head><title>誘導ぺーじ</title></html><body>
-  EOS
-end
-
-# フッタ的なところ
-def puts_footer()
-  puts <<-EOS
-<hr><a href="/">戻りたい</a></body></html>
   EOS
 end
 

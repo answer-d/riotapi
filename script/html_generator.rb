@@ -15,6 +15,54 @@ class HtmlGenerator
   @@logger = Logger.new("#{@@basedir}/../log/#{File.basename($0, ".rb")}.log")
   @@logger.level = eval @@conf["logger"]["log_level"]
   
+  # 現在のランクを表示するやつのラッパ
+  def self.wr_cur_rank(name)
+    @@logger.info("#{@@basename} : wr_cur_rank(#{name}) start")
+    
+    begin
+      @@logger.debug("#{@@basename} : call APICaller.summoner_byname(#{name})")
+      summoner_json = APICaller.summoner_byname(name)
+      @@logger.debug("#{@@basename} : ret APICaller.summoner_byname(#{name})")
+    rescue RiotAPIException => e
+      @@logger.warn("#{@@basename} : #{e} occured")
+      @@logger.warn("#{@@basename} : propagates #{e}")
+      raise e
+    end
+    
+    summoner_id = summoner_json["id"]
+    @@logger.info("#{@@basename} : #{name}'s summoner_id is #{summoner_id}")
+    
+    buf = ""
+    buf += <<-EOS
+      <html>
+      <head>
+      </head>
+      <body>
+      <p>
+      サモナーネーム : #{name}
+      </p>
+      <h2><a href="http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_rank.rb?id=#{summoner_id}" target="blank">
+      http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_rank.rb?id=#{summoner_id}</a></h2>
+      <h3>設定方法</h3>
+      <p>
+      ★なんかかく
+      </p>
+      <h3>注意</h3>
+      <p>
+      ★なんかなんかかく
+      </p>
+      <hr>
+      <p>
+      <a href="/rank.html">戻りたい</a>
+      </p>
+      </body>
+      </html>
+    EOS
+    
+    @@logger.info("#{@@basename} : wr_cur_rank(#{name}) end => #{buf}")
+    return buf
+  end
+  
   # 現在のランクを表示
   def self.cur_rank(summoner_id)
     @@logger.info("#{@@basename} : cur_rank(#{summoner_id}) start")
@@ -43,7 +91,6 @@ class HtmlGenerator
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Cache-Control" content="no-cache">
       <meta http-equiv="Expires" content="0">
-      <title>レート</title>
       </head>
       <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
       <!-- last update : #{DateTime.now} -->
@@ -65,10 +112,59 @@ class HtmlGenerator
     @@logger.info("#{@@basename} : cur_rank(#{summoner_id}) end => #{buf}")
     return buf
   end
+
+  # キーストーンマスタリーを表示するやつのラッパ
+  def self.wr_cur_keystones(name, show_position)
+    @@logger.info("#{@@basename} : wr_cur_keystones(#{name}, #{show_position}) start")
+
+    begin
+      @@logger.debug("#{@@basename} : call APICaller.summoner_byname(#{name})")
+      summoner_json = APICaller.summoner_byname(name)
+      @@logger.debug("#{@@basename} : ret APICaller.summoner_byname(#{name})")
+    rescue RiotAPIException => e
+      @@logger.warn("#{@@basename} : #{e} occured")
+      @@logger.warn("#{@@basename} : propagates #{e}")
+      raise e
+    end
+
+    summoner_id = summoner_json["id"]
+    @@logger.info("#{@@basename} : #{name}'s summoner_id is #{summoner_id}")
+
+    buf = ""
+    buf += <<-EOS
+      <html>
+      <head>
+      </head>
+      <body>
+      <p>
+      サモナーネーム : #{name}<br>
+      ランク表示するか : #{show_position}
+      </p>
+      <h2><a href="http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}" target="blank">
+      http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}</a></h2>
+      <h3>設定方法</h3>
+      <p>
+      ★なんかかく
+      </p>
+      <h3>注意</h3>
+      <p>
+      ★なんかなんかかく
+      </p>
+      <hr>
+      <p>
+      <a href="/keystone.html">戻りたい</a>
+      </p>
+      </body>
+      </html>
+    EOS
+
+    @@logger.info("#{@@basename} : wr_cur_keystones(#{name}, #{show_position}) end => #{buf}")
+    return buf
+  end
   
-  # キーストーンマスタリーと現在のランクを表示
-  def self.cur_keystones(name, show_position)
-    @@logger.info("#{@@basename} : cur_keystones(#{name}, #{show_position}) start")
+  # キーストーンマスタリーを表示
+  def self.cur_keystones(id, show_position)
+    @@logger.info("#{@@basename} : cur_keystones(#{id}, #{show_position}) start")
     
     window_width=1920 #全体の横幅
     icon_width=(window_width*0.05).floor+1 #チャンピオン情報の横幅
@@ -80,50 +176,37 @@ class HtmlGenerator
     ins_t_margin=15 # 上側マージン
     ins_v_margin=7 # 間マージン
 
-    # キーストーンマスタリーの一覧をハッシュ化
-    keystone_names = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
-    mastery_list = CSV.read(File.expand_path(File.dirname(__FILE__)) + '/../data/mastery.csv') #配列の配列
-    mastery_hash = mastery_list.inject({}){|h, elem| h[elem[0]] = elem[1]; h} #ハッシュ化
-    keystone_masteries = keystone_names.inject({}){|h, elem| h[mastery_hash.key(elem)] = elem; h} #キーストーンだけ抜き出し
-    @@logger.debug("#{@@basename} : keystone_masteries=#{keystone_masteries}")
-
-    # サモナーネームからサモナーIDを引っ張る
-    begin
-      @@logger.debug("#{@@basename} : call APICaller.summoner_byname(#{name})")
-      summoner_json = APICaller.summoner_byname(name)
-      @@logger.debug("#{@@basename} : ret APICaller.summoner_byname(#{name})")
-    rescue RiotAPIException => e
-      @@logger.warn("#{@@basename} : #{e} occured")
-      @@logger.warn("#{@@basename} : propagates #{e}")
-      raise e
-    end
-    summoner_id = summoner_json["id"]
-    @@logger.info("#{@@basename} : #{name}'s summoner_id is #{summoner_id}")
-    
     # サモナーIDから進行中ゲーム情報のjsonを引っ張る
+    summoner_id = id.to_i
     begin
       @@logger.debug("#{@@basename} : call APICaller.activegame_byid(#{summoner_id})")
       json = APICaller.activegame_byid(summoner_id)
       @@logger.debug("#{@@basename} : ret APICaller.activegame_byid(#{summoner_id})")
     rescue RiotAPIException => e
       @@logger.warn("#{@@basename} : #{e} occured")
+      case e.code
+      when 404
+        @@logger.info("#{@@basename} : activegame not found. returns standby html.")
+      end
       @@logger.warn("#{@@basename} : propagates #{e}")
       raise e
     end
+
+    # キーストーンマスタリーの一覧をハッシュ化
+    keystone_names = ["死神の残り火","雷帝の号令","岩界の盟約","嵐乗りの勇躍","巨人の勇気","風詠みの祝福","戦いの律動","不死者の握撃","渇欲の戦神"]
+    mastery_list = CSV.read(File.expand_path(File.dirname(__FILE__)) + '/../data/mastery.csv') #配列の配列
+    mastery_hash = mastery_list.inject({}){|h, elem| h[elem[0]] = elem[1]; h} #ハッシュ化
+    keystone_masteries = keystone_names.inject({}){|h, elem| h[mastery_hash.key(elem)] = elem; h} #キーストーンだけ抜き出し
+    @@logger.debug("#{@@basename} : keystone_masteries=#{keystone_masteries}")
     
     # HTML生成
     buf=""
     buf += <<-EOS
       <html>
       <head>
-      <meta http-equiv="Pragma" content="no-cache">
-      <meta http-equiv="Cache-Control" content="no-cache">
-      <meta http-equiv="Expires" content="0">
       <!-- last update : #{DateTime.now} -->
-      <title>#{name}</title>
       </head>
       <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
-      <!-- arg : #{name}(#{summoner_id}) -->
       <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
       <tr height="#{window_t_margin}">
       <td width="#{icon_width}"></td>
@@ -212,21 +295,21 @@ class HtmlGenerator
       }
       buf += %!</table></td>!
       buf += %!<td></td>! if teamId == 100
-      sleep 0.5 #API制限緩和用
+      sleep 0.2 #API制限緩和用
       @@logger.debug("#{@@basename} : loop for teamId=#{teamId} end")
     }
     buf += %!</tr></table></body></html>!
     
-    # ファイル書き出し
-    # overlayフォルダはapacheユーザに書き込み権限があること
-    @@logger.info("#{@@basename} : create #{@@basedir.gsub("script", "html/overlay/") + summoner_id.to_s + '.html'}")
-    @@logger.debug("#{buf}")
-    File.open(@@basedir.gsub("script", "html/overlay/") + summoner_id.to_s + '.html', "w"){|f|
-      f.puts buf
-    }
-    
-    @@logger.info("#{@@basename} : cur_keystones(#{name}, #{show_position}) end => #{summoner_id}")
-    return summoner_id
+    @@logger.info("#{@@basename} : cur_keystones(#{id}, #{show_position}) end => #{buf}")
+    return buf
+  end
+  
+  # CGI用ヘッダ
+  def self.cgi_header()
+    return <<-EOS
+Content-type: text/html
+
+    EOS
   end
 end
 
