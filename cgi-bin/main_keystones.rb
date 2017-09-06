@@ -34,7 +34,7 @@ def main
       puts <<-EOS
         <html>
         <head><meta http-equiv="Refresh" content="30"></head>
-        <body><font color="white">試合開始待機中</font></body>
+        <body>試合開始待機中</body>
         </html>
       EOS
     else

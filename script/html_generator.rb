@@ -41,8 +41,7 @@ class HtmlGenerator
       <p>
       サモナーネーム : #{name}
       </p>
-      <h2><a href="http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_rank.rb?id=#{summoner_id}" target="blank">
-      http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_rank.rb?id=#{summoner_id}</a></h2>
+      <h2><a href="/app/main_rank.rb?id=#{summoner_id}" target="blank">オーバーレイのURLはこちら</a></h2>
       <h3>設定方法</h3>
       <p>
       ★なんかかく
@@ -140,8 +139,7 @@ class HtmlGenerator
       サモナーネーム : #{name}<br>
       ランク表示するか : #{show_position}
       </p>
-      <h2><a href="http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}" target="blank">
-      http://ec2-54-149-199-29.us-west-2.compute.amazonaws.com/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}</a></h2>
+      <h2><a href="/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}" target="blank">オーバーレイのURLはこちら</a></h2>
       <h3>設定方法</h3>
       <p>
       ★なんかかく
@@ -206,7 +204,9 @@ class HtmlGenerator
       <head>
       <!-- last update : #{DateTime.now} -->
       </head>
-      <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+      <!-- <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0"> -->
+      <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" background="/img/spectator.jpg">
+      
       <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
       <tr height="#{window_t_margin}">
       <td width="#{icon_width}"></td>
