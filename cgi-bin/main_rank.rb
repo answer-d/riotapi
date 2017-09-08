@@ -14,7 +14,17 @@ def main
   begin
     ret = HtmlGenerator.cur_rank(id)
   rescue RiotAPIException => e
-    puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
+    puts <<-EOS
+      <html>
+      <head>
+      <link rel="stylesheet" type="text/css" href="/css/default.css?re=load">
+      <title>rank_#{id}</title>
+      </head>
+      <body>
+      <p class="error">#{e.msg_to_html}</p>
+      </body>
+      </html>
+      EOS
     exit 2
   end
 

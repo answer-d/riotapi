@@ -17,15 +17,13 @@ def main
     puts <<-EOS
     <html>
     <head>
+    <link rel="stylesheet" type="text/css" href="/css/default.css?re=load">
     <title>現在ランクをどうにかこうにかするやつ</title>
     </head>
     <body>
     <h1>現在ランクをいい感じに表示するオーバーレイ生成器</h1>
     <hr>
-    <p>
-    エラーしました…<br>
-    <font color="red">#{e.msg_to_html}</font>
-    </p>
+    <p class="error">#{e.msg_to_html}</p>
     <hr>
     <a href="/rank.html">戻りたい</a>
     </body>

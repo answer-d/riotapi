@@ -29,16 +29,28 @@ def main
   begin
     ret = HtmlGenerator.cur_keystones(id, show_position)
   rescue RiotAPIException => e
+    puts <<-EOS
+      <html>
+      <head>
+      <link rel="stylesheet" type="text/css" href="/css/default.css?re=load">
+      <title>keystones_#{id}(#{show_position})</title>
+    EOS
+
     case e.code
     when 404 # ゲーム中じゃないときは30秒に一回リロードさせる
       puts <<-EOS
-        <html>
-        <head><meta http-equiv="Refresh" content="30"></head>
-        <body>試合開始待機中</body>
+        <meta http-equiv="Refresh" content="30">
+        </head>
+        <body><p>試合開始待機中</p></body>
         </html>
       EOS
+      exit 0
     else
-      puts '<p><font color="red">' + e.msg_to_html + '</font></p>'
+      puts <<-EOS
+        </head>
+        <body><p class="error">#{e.msg_to_html}</p></body>
+        </html>
+      EOS
       exit 2
     end
   end
@@ -46,14 +58,6 @@ def main
   puts ret
 
   exit 0
-end
-
-# ヘッダ的なところ
-def puts_header()
-  puts <<-EOS
-Content-type: text/html
-
-  EOS
 end
 
 main

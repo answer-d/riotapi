@@ -18,14 +18,13 @@ def main
     puts <<-EOS
     <html>
     <head>
+    <link rel="stylesheet" type="text/css" href="/css/default.css?re=load">
     <title>ますたりーをあれするやつ</title>
     </head>
     <body>
     <h1>観戦モードでキーストーンマスタリーをいい感じに表示するオーバーレイ生成器</h1>
     <hr>
-    <p>
-    エラーしました…<br>
-    <font color="red">#{e.msg_to_html}</font>
+    <p class="error">#{e.msg_to_html}</p>
     <hr>
     <a href="/keystone.html">戻りたい</a>
     </body>

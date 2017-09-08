@@ -44,9 +44,6 @@ class APICaller
     rescue RiotAPIException => e
       @@logger.warn("#{@@basename} : #{e} occured")
       case e.code
-      when 401
-        @@logger.error("#{@@basename} : 401 Unauorized(SN : #{name})")
-        e.msg += "\nAPIキーが切れているかもしれません？あんでぃーをおこ"
       when 404
         @@logger.info("#{@@basename} : 404 not found(SN : #{name})")
         e.msg += "\nそんなサモナーネームはないと思います"
@@ -165,6 +162,8 @@ class APICaller
       when 400
         msg += "\nベリーバッドなリクエスト、おこです"
       when 401
+        msg += "\nAPIキーが切れてるかもしれない祭り。あんでぃーを怒れ"
+      when 403
         msg += "\nAPIキーが切れてるかもしれない祭り。あんでぃーを怒れ"
       when 429
         msg += "\nれーとりみっとです、加減してくださいお願いします何でもしますから(何でもするとは言っていない)"

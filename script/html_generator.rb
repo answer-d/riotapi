@@ -36,6 +36,7 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
+      <link rel="stylesheet" type="text/css" href="/css/default.css?re=load">
       <title>現在ランクをどうにかこうにかするやつ</title>
       </head>
       <body>
@@ -47,11 +48,21 @@ class HtmlGenerator
       <h2><a href="/app/main_rank.rb?id=#{summoner_id}" target="blank">オーバーレイのURLはこちら</a></h2>
       <h3>設定方法</h3>
       <p>
-      ★なんかかく
+      <ol>
+      <li>上のリンクをクリックして出てきたページのURLをコピーする</li>
+      <li>コピーしたURLを配信ソフト(OBSなど)のブラウザソースとして取り込む<br>
+          サイズ：256x64</li>
+      <li>CSSに以下をコピペする<br>
+          ★CSS</li>
+      </ol>
       </p>
       <h3>注意</h3>
       <p>
-      ★なんかなんかかく
+      <ul>
+      <li>文字色を変えたい場合はCSSをいじって下さい。<br>
+          ★「」の部分です。<br>
+          例：赤にしたい場合→「」</li>
+      </ul>
       </p>
       <hr>
       <p>
@@ -73,7 +84,6 @@ class HtmlGenerator
     window_width = '256' #px
     window_height = '64' #px
     icon_sides = window_height
-    font_options = 'size="5" color="white"'
 
     begin
       @@logger.debug("#{@@basename} : call APICaller.position_byid(#{summoner_id})")
@@ -93,19 +103,20 @@ class HtmlGenerator
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Cache-Control" content="no-cache">
       <meta http-equiv="Expires" content="0">
+      <link rel="stylesheet" type="text/css" href="/css/overlay.css?re=load">
       <title>rank_#{summoner_id}</title>
       </head>
-      <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+      <body>
       <!-- last update : #{DateTime.now} -->
-      <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
+      <table width="#{window_width}" height="#{window_height}">
       <tr><td width="#{icon_sides}">
       <img src=/img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
       </td><td>
-      <b><font #{font_options}>
+      <div id="rank_str">
       #{hash["tier"]} #{hash["rank"]}<br>
       #{hash["leaguePoints"]}LP
       #{"&nbsp;" + hash["miniSeries"]["progress"] if hash["leaguePoints"] == 100}
-      </font></b>
+      </div>
       </td></tr>
       </table>
       </body>
@@ -137,6 +148,7 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
+      <link rel="stylesheet" type="text/css" href="/css/default.css?re=load">
       <title>ますたりーをあれするやつ</title>
       </head>
       <body>
@@ -210,13 +222,14 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
+      <link rel="stylesheet" type="text/css" href="/css/overlay.css?re=load">
       <title>keystones_#{id}(#{show_position})</title>
       <!-- last update : #{DateTime.now} -->
       </head>
       <!-- <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0"> -->
-      <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" background="/img/spectator_1920.png">
-      
-      <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
+      <!-- <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" background="/img/spectator_1920.png"> -->
+      <body>
+      <table width="#{window_width}" height="#{window_height}">
       <tr height="#{window_t_margin}">
       <td width="#{icon_width}"></td>
       <td width="#{window_width-icon_width*2}"></td>
@@ -228,7 +241,7 @@ class HtmlGenerator
     img_options = %!width="#{ins_icon_sides}" height="#{ins_icon_sides}"!
     [100,200].each{|teamId|
       @@logger.debug("#{@@basename} : loop for teamId=#{teamId} start")
-      buf += %!<td><table border=0 width="#{icon_width}" height="#{icon_height*5}" cellspacing="0" cellpadding="0">!
+      buf += %!<td width="#{icon_width}"><table width="#{icon_width}" height="#{icon_height*5}">!
       json["participants"].select{|elem| elem["teamId"] == teamId}.each{|elem|
         @@logger.debug("#{@@basename} : loop for participant=#{elem["summonerName"]} - #{elem["summonerId"]} start")
         part_masteries = elem["masteries"].map{|hash| hash["masteryId"].to_s}
@@ -303,12 +316,12 @@ class HtmlGenerator
         @@logger.debug("#{@@basename} : loop for participant=#{elem["summonerName"]} - #{elem["summonerId"]} end")
       }
       buf += %!</table></td>!
-      buf += %!<td></td>! if teamId == 100
+      buf += %!<td width="#{window_width-icon_width*2}"></td>! if teamId == 100
       sleep 0.2 #API制限緩和用
       @@logger.debug("#{@@basename} : loop for teamId=#{teamId} end")
     }
     buf += <<-EOS
-      </tr><tr height="#{window_height - window_t_margin - icon_height*5}" bgcolor="red">
+      </tr><tr height="#{window_height - window_t_margin - icon_height*5}">
       <td width="#{icon_width}"></td>
       <td width="#{window_width-icon_width*2}"></td>
       <td width="#{icon_width}"></td></tr>
