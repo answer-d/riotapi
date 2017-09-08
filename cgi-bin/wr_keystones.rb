@@ -16,10 +16,20 @@ def main
     ret = HtmlGenerator.wr_cur_keystones(name, show_position)
   rescue RiotAPIException => e
     puts <<-EOS
+    <html>
+    <head>
+    <title>ますたりーをあれするやつ</title>
+    </head>
+    <body>
+    <h1>観戦モードでキーストーンマスタリーをいい感じに表示するオーバーレイ生成器</h1>
+    <hr>
+    <p>
     エラーしました…<br>
     <font color="red">#{e.msg_to_html}</font>
     <hr>
     <a href="/keystone.html">戻りたい</a>
+    </body>
+    </html>
     EOS
 
     exit 2

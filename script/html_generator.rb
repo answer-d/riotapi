@@ -36,8 +36,11 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
+      <title>現在ランクをどうにかこうにかするやつ</title>
       </head>
       <body>
+      <h1>現在ランクをいい感じに表示するオーバーレイ生成器</h1>
+      <hr>
       <p>
       サモナーネーム : #{name}
       </p>
@@ -90,12 +93,13 @@ class HtmlGenerator
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Cache-Control" content="no-cache">
       <meta http-equiv="Expires" content="0">
+      <title>rank_#{summoner_id}</title>
       </head>
       <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
       <!-- last update : #{DateTime.now} -->
       <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
       <tr><td width="#{icon_sides}">
-      <img src=../img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
+      <img src=/img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
       </td><td>
       <b><font #{font_options}>
       #{hash["tier"]} #{hash["rank"]}<br>
@@ -133,8 +137,11 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
+      <title>ますたりーをあれするやつ</title>
       </head>
       <body>
+      <h1>観戦モードでキーストーンマスタリーをいい感じに表示するオーバーレイ生成器</h1>
+      <hr>
       <p>
       サモナーネーム : #{name}<br>
       ランク表示するか : #{show_position}
@@ -165,10 +172,11 @@ class HtmlGenerator
     @@logger.info("#{@@basename} : cur_keystones(#{id}, #{show_position}) start")
     
     window_width=1920 #全体の横幅
-    icon_width=(window_width*0.05).floor+1 #チャンピオン情報の横幅
+    window_height=1080 # 全体の縦幅
+    icon_width=97 #チャンピオン情報の横幅
     icon_height=111 #チャンピオン情報の縦幅(チャンピオン毎)
-    window_t_margin=122 #全体の上側マージン
-    window_height=icon_height*5+window_t_margin #全体の縦幅(1080じゃない、下が余る)
+    window_t_margin=121 #全体の上側マージン
+    #window_height=icon_height*5+window_t_margin #全体の縦幅(1080じゃない、下が余る)
     ins_icon_sides=28 # マスタリー・ランクアイコンの一辺
     ins_l_margin=32 # サモスペ-ランク情報の間のマージン
     ins_t_margin=15 # 上側マージン
@@ -202,17 +210,18 @@ class HtmlGenerator
     buf += <<-EOS
       <html>
       <head>
+      <title>keystones_#{id}(#{show_position})</title>
       <!-- last update : #{DateTime.now} -->
       </head>
       <!-- <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0"> -->
-      <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" background="/img/spectator.jpg">
+      <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" background="/img/spectator_1920.png">
       
       <table border=0 width="#{window_width}" height="#{window_height}" cellspacing="0" cellpadding="0">
       <tr height="#{window_t_margin}">
       <td width="#{icon_width}"></td>
       <td width="#{window_width-icon_width*2}"></td>
       <td width="#{icon_width}"></td></tr>
-      <tr>
+      <tr height="#{icon_height * 5}">
     EOS
     
     # サモナー毎に繰り返すところ
@@ -239,11 +248,11 @@ class HtmlGenerator
             raise e
           end
 
-          img_rank = %!../img/#{l_json.nil? ? "UNRANK" : l_json["tier"]+l_json["rank"]}.png!
+          img_rank = %!/img/#{l_json.nil? ? "UNRANK" : l_json["tier"]+l_json["rank"]}.png!
           @@logger.debug("#{@@basename} : img_rank=#{img_rank}")
         end
 
-        img_keystone = %!../img/#{part_keystone}.png!
+        img_keystone = %!/img/#{part_keystone}.png!
         @@logger.debug("#{@@basename} : img_keystone=#{img_keystone}")
 
         buf += <<-EOS
@@ -298,7 +307,13 @@ class HtmlGenerator
       sleep 0.2 #API制限緩和用
       @@logger.debug("#{@@basename} : loop for teamId=#{teamId} end")
     }
-    buf += %!</tr></table></body></html>!
+    buf += <<-EOS
+      </tr><tr height="#{window_height - window_t_margin - icon_height*5}" bgcolor="red">
+      <td width="#{icon_width}"></td>
+      <td width="#{window_width-icon_width*2}"></td>
+      <td width="#{icon_width}"></td></tr>
+      </table></body></html>
+    EOS
     
     @@logger.info("#{@@basename} : cur_keystones(#{id}, #{show_position}) end => #{buf}")
     return buf
