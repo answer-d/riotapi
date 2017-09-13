@@ -50,18 +50,26 @@ class HtmlGenerator
       <p>
       <ol>
       <li>上のリンクをクリックして出てきたページのURLをコピーする</li>
-      <li>コピーしたURLを配信ソフト(OBSなど)のブラウザソースとして取り込む<br>
-          サイズ：256x64</li>
-      <li>CSSに以下をコピペする<br>
-          ★CSS</li>
+      <li>配信ソフト(OBSなど)のブラウザソース(webページを取り込む機能)でソース追加する<br>
+          <table>
+          <tr><th>URL</th><td>↑でコピーしたURL</td></tr>
+          <tr><th>Width</th><td>256</td></tr>
+          <tr><th>Height</th><td>64</td></tr>
+          <tr><th>CSS</th><td><pre>body { margin : 0 ; padding : 0 }
+table { border-collapse : collapse ; border : 0px}
+table tr, table td { padding : 0px }
+div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td></tr>
+          </table>
+          上記項目以外はデフォルトでOK(変えても良いです)</li>
+      <li>好みの大きさに変えたり画面上の位置を調整したりして完成</li>
       </ol>
       </p>
       <h3>注意</h3>
       <p>
       <ul>
-      <li>文字色を変えたい場合はCSSをいじって下さい。<br>
-          ★「」の部分です。<br>
-          例：赤にしたい場合→「」</li>
+      <li>文字色等のフォント設定を変えたい場合はCSSをいじって下さい。<br>
+          「div#rank_str」の部分です。<br>
+          例：赤字にしたい場合→「div#rank_str { color : red ; font-size : 12pt ; font-weight : bold }」</li>
       </ul>
       </p>
       <hr>

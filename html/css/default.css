@@ -1,1 +1,5 @@
 p.error { color : red }
+table { text-align : left ; border-collapse : collapse }
+table th { background : #fff5e5 }
+table th, table tr, table td { border : solid 1px black ; padding : 3px }
+
