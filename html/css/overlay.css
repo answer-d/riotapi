@@ -1,4 +1,10 @@
 body { margin : 0 ; padding : 0 }
 table { border-collapse : collapse ; border : 0px}
 table tr, table td { padding : 0px }
+
+table#rank { width : 100% ; height : 100% }
+tr#rank { height : 100% }
+td#rank_icon { width : 25% }
+img#rank_icon { width : 100%  ; height : 100% }
+td#rank_str { width : 75% }
 div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }

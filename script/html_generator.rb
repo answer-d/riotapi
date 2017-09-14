@@ -45,7 +45,7 @@ class HtmlGenerator
       <p>
       サモナーネーム : #{name}
       </p>
-      <h2><a href="/app/main_rank.rb?id=#{summoner_id}" target="blank">オーバーレイのURLはこちら</a></h2>
+      <h2><a href="/app/main_rank.rb?id=#{summoner_id}" target="_blank">オーバーレイのURLはこちら</a></h2>
       <h3>設定方法</h3>
       <p>
       <ol>
@@ -55,10 +55,9 @@ class HtmlGenerator
           <tr><th>URL</th><td>↑でコピーしたURL</td></tr>
           <tr><th>Width</th><td>256</td></tr>
           <tr><th>Height</th><td>64</td></tr>
-          <tr><th>CSS</th><td><pre>body { margin : 0 ; padding : 0 }
-table { border-collapse : collapse ; border : 0px}
-table tr, table td { padding : 0px }
-div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td></tr>
+          <tr><th>CSS</th><td>(空白)</td></tr>
+          <tr><th>Refreshなんとかかんとか</th><td>チェック入れる</td></tr>
+          <tr><th>Shutdownなんとかかんとか</th><td>チェック入れる</td></tr>
           </table>
           上記項目以外はデフォルトでOK(変えても良いです)</li>
       <li>好みの大きさに変えたり画面上の位置を調整したりして完成</li>
@@ -67,9 +66,10 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
       <h3>注意</h3>
       <p>
       <ul>
-      <li>文字色等のフォント設定を変えたい場合はCSSをいじって下さい。<br>
-          「div#rank_str」の部分です。<br>
-          例：赤字にしたい場合→「div#rank_str { color : red ; font-size : 12pt ; font-weight : bold }」</li>
+      <li>文字色等のフォント設定を変えたい場合はCSSに以下を書いて変えたい部分をいじって下さい。<br>
+          <code>div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</code><br>
+          例1：赤字にしたい場合→「<code>div#rank_str { color : red ; font-size : 12pt ; font-weight : bold }</code>」<br>
+          例2：文字を大きくしたい場合→「<code>div#rank_str { color : white ; font-size : 18pt ; font-weight : bold }</code>」<br></li>
       </ul>
       </p>
       <hr>
@@ -89,9 +89,6 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
     @@logger.info("#{@@basename} : cur_rank(#{summoner_id}) start")
     
     refresh_rate = '30' #秒
-    window_width = '256' #px
-    window_height = '64' #px
-    icon_sides = window_height
 
     begin
       @@logger.debug("#{@@basename} : call APICaller.position_byid(#{summoner_id})")
@@ -116,10 +113,10 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
       </head>
       <body>
       <!-- last update : #{DateTime.now} -->
-      <table width="#{window_width}" height="#{window_height}">
-      <tr><td width="#{icon_sides}">
-      <img src=/img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png width="#{icon_sides}" height="#{icon_sides}">
-      </td><td>
+      <table id="rank">
+      <tr><td id="rank_icon">
+      <img src=/img/#{hash.nil? ? 'UNRANK' : hash["tier"]+hash["rank"]}.png id="rank_icon">
+      </td><td id="rank_str">
       <div id="rank_str">
       #{hash["tier"]} #{hash["rank"]}<br>
       #{hash["leaguePoints"]}LP
@@ -166,7 +163,7 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
       サモナーネーム : #{name}<br>
       ランク表示するか : #{show_position}
       </p>
-      <h2><a href="/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}" target="blank">オーバーレイのURLはこちら</a></h2>
+      <h2><a href="/app/main_keystones.rb?id=#{summoner_id}&show_position=#{show_position}" target="_blank">オーバーレイのURLはこちら</a></h2>
       <h3>設定方法</h3>
       <p>
       ★なんかかく
@@ -193,14 +190,14 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
     
     window_width=1920 #全体の横幅
     window_height=1080 # 全体の縦幅
+    window_t_margin=121 #全体の上側マージン
     icon_width=97 #チャンピオン情報の横幅
     icon_height=111 #チャンピオン情報の縦幅(チャンピオン毎)
-    window_t_margin=121 #全体の上側マージン
-    #window_height=icon_height*5+window_t_margin #全体の縦幅(1080じゃない、下が余る)
-    ins_icon_sides=28 # マスタリー・ランクアイコンの一辺
-    ins_l_margin=32 # サモスペ-ランク情報の間のマージン
-    ins_t_margin=15 # 上側マージン
-    ins_v_margin=7 # 間マージン
+
+    ins_t_margin=16 # 上側マージン
+    ins_l_margin=32 # 左側マージン
+    ins_b_margin=33 # 下側マージン
+    ins_icon_sides=31 # マスタリー・ランクアイコンの一辺
 
     # サモナーIDから進行中ゲーム情報のjsonを引っ張る
     summoner_id = id.to_i
@@ -234,8 +231,6 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
       <title>keystones_#{id}(#{show_position})</title>
       <!-- last update : #{DateTime.now} -->
       </head>
-      <!-- <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0"> -->
-      <!-- <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" background="/img/spectator_1920.png"> -->
       <body>
       <table width="#{window_width}" height="#{window_height}">
       <tr height="#{window_t_margin}">
@@ -296,7 +291,7 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
         buf += <<-EOS
           </td><td width="#{teamId == 100 ? ins_icon_sides : ins_l_margin}"></td>
           </tr>
-          <tr height="#{ins_v_margin}">
+          <tr height="#{icon_height - ins_t_margin - ins_b_margin - ins_icon_sides*2}">
           <td width="#{teamId == 100 ? ins_l_margin : ins_icon_sides}"></td>
           <td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}"></td>
           <td width="#{teamId == 100 ? icon_width - ins_l_margin - ins_icon_sides*2 : ins_icon_sides}"></td>
@@ -314,7 +309,7 @@ div#rank_str { color : white ; font-size : 12pt ; font-weight : bold }</pre></td
         buf += %!<img src="#{img_keystone}" #{img_options}>! if teamId == 100 && !part_keystone.nil?
         buf += <<-EOS
           </td></tr>
-          <tr height="#{icon_height - ins_t_margin - ins_v_margin - ins_icon_sides*2}">
+          <tr height="#{ins_b_margin}">
           <td width="#{teamId == 100 ? ins_l_margin : ins_icon_sides}"></td>
           <td width="#{teamId == 100 ? ins_icon_sides : icon_width - ins_l_margin - ins_icon_sides*2}"></td>
           <td width="#{teamId == 100 ? icon_width - ins_l_margin - ins_icon_sides*2 : ins_icon_sides}"></td>
